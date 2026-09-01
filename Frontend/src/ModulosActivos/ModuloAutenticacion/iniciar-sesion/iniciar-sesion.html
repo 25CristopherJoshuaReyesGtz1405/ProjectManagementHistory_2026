@@ -1,0 +1,75 @@
+<div class="login-page">
+  <button 
+   (click)="temaService.alternarTema()" 
+   style="position: absolute; top: 20px; right: 20px; z-index: 100; padding: 10px 20px; border-radius: 8px; background: var(--dorado-main); cursor: pointer; border: none; font-weight: bold;">
+   Probar Modo Oscuro
+</button>
+  <div class="background-slider"> 
+    <div class="slide slide-1"></div>
+    <div class="slide slide-2"></div>
+    <div class="slide slide-3"></div>
+    <div class="slide slide-4"></div>
+    <div class="slide slide-5"></div>
+    <div class="slide slide-6"></div>
+    <div class="slide slide-7"></div>
+    <div class="slide slide-8"></div>
+  </div>
+  
+  <div class="slider-overlay"></div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <h3 class="titulo-principal">Instituto Tecnológico de Durango</h3>
+      <img 
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg/3840px-Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg.png" 
+        alt="Logo ITD" 
+        class="logo" 
+      />
+      <p class="subtitulo">Plataforma De Archivo Histórico</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="iniciarSesion()">
+      
+      <div class="form-group">
+        <label class="label-text">Correo Institucional o Matrícula</label>
+        <app-campo-entrada-shared 
+          label="usuario@itdurango.edu.mx" 
+          type="text" 
+          iconClass="bi bi-person-badge-fill" 
+          formControlName="correo">
+        </app-campo-entrada-shared>
+        
+        <div *ngIf="f['correo'].invalid && f['correo'].touched" class="error-container fade-in">
+          <span *ngIf="f['correo'].errors?.['required']"><i class="bi bi-exclamation-circle-fill"></i> El correo es obligatorio.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label-text">Clave de Acceso</label>
+        <app-campo-entrada-shared 
+          label="••••••••" 
+          type="password" 
+          iconClass="bi bi-shield-lock-fill" 
+          formControlName="contrasena">
+        </app-campo-entrada-shared>
+        
+        <div *ngIf="f['contrasena'].invalid && f['contrasena'].touched" class="error-container fade-in">
+          <span *ngIf="f['contrasena'].errors?.['required']"><i class="bi bi-exclamation-circle-fill"></i> La contraseña es obligatoria.</span>
+          <span *ngIf="f['contrasena'].errors?.['minlength']"><i class="bi bi-exclamation-circle-fill"></i> Mínimo 6 caracteres.</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a class="forgot-link" (click)="recuperarAcceso()">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <app-btn-shared 
+        [text]="estaCargando ? 'Verificando credenciales...' : 'Ingresar al Sistema'" 
+        [iconClass]="estaCargando ? 'bi bi-hourglass-split spin-icon' : 'bi bi-box-arrow-in-right'" 
+        [disabled]="estaCargando" 
+        variant="solid">
+      </app-btn-shared>
+      
+    </form>
+  </div>
+</div>

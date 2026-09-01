@@ -1,0 +1,242 @@
+<div class="modal-backdrop fade-in" (click)="cerrarModal()">
+  <div class="premium-glass-modal master-modal animate-slide-up" (click)="$event.stopPropagation()">
+    <!-- ============================================== -->
+    <!-- CABECERA ADAPTATIVA                            -->
+    <!-- ============================================== -->
+    <header class="modal-header guinda-institutional">
+      <!-- Cabecera: Modo Buscar -->
+      <div class="header-content" *ngIf="vistaActual === 'buscar'">
+        <span class="badge-tag"><i class="bi bi-radar me-1"></i> Radar de Archivo</span>
+        <div class="header-titles">
+          <h2>Búsqueda de Expediente</h2>
+          <p>Localice el documento por matrícula, folio o nombre completo.</p>
+        </div>
+      </div>
+
+      <!-- Cabecera: Modo Visor -->
+      <div class="header-content" *ngIf="vistaActual === 'visor' && expedienteSeleccionado">
+        <span class="badge-tag">
+          <i
+            class="bi bi-shield-lock-fill me-1"
+            *ngIf="expedienteSeleccionado.bloqueadoHistorico"
+          ></i>
+          <i class="bi bi-person-badge me-1" *ngIf="!expedienteSeleccionado.bloqueadoHistorico"></i>
+          Expediente {{ expedienteSeleccionado.estatus }}
+        </span>
+        <div class="header-titles">
+          <h2>{{ nombreTitularSeleccionado }}</h2>
+          <p class="matricula-display">
+            MATRÍCULA: <strong>{{ expedienteSeleccionado.numControl }}</strong>
+          </p>
+        </div>
+      </div>
+
+      <!-- Botón Cerrar Global -->
+      <button class="btn-close-white" (click)="cerrarModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <div class="modal-body custom-scroll">
+      <!-- ============================================== -->
+      <!-- ESTADO 1: MOTOR DE BÚSQUEDA                    -->
+      <!-- ============================================== -->
+      <div class="search-state" *ngIf="vistaActual === 'buscar'">
+        <!-- Barra Omnibox -->
+        <div class="search-input-wrapper">
+          <i class="bi bi-search search-icon" *ngIf="!buscando"></i>
+          <i class="bi bi-arrow-repeat spin-icon search-icon text-guinda" *ngIf="buscando"></i>
+          <input
+            type="text"
+            class="omnibox-input"
+            placeholder="Ingrese la matrícula o el nombre del titular..."
+            [(ngModel)]="terminoBusqueda"
+            (keyup)="alEscribir()"
+            autocomplete="off"
+          />
+        </div>
+        <br>
+
+        <!-- Resultados -->
+        <div class="results-container mt-4">
+          <!-- BLOQUE 1: RESULTADOS DE EXPEDIENTES (Matrículas) -->
+          <div class="results-group" *ngIf="resultadosExpedientes.length > 0">
+            <h4 class="group-header">Expedientes Encontrados</h4>
+            <div
+              class="result-item"
+              *ngFor="let exp of resultadosExpedientes"
+              (click)="seleccionarExpediente(exp)"
+            >
+              <div class="item-icon bg-guinda-light">
+                <i class="bi bi-folder2-open text-guinda"></i>
+              </div>
+              <div class="item-details">
+                <span class="item-title">{{ exp.numControl }}</span>
+                <span class="item-subtitle"
+                  >{{ exp.carreraId }} • Generación: {{ exp.generacion }}</span
+                >
+              </div>
+              <div
+                class="item-badge"
+                [ngClass]="exp.estatus === 'ACTIVO' ? 'badge-active' : 'badge-historical'"
+              >
+                {{ exp.estatus }}
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOQUE 2: RESULTADOS DE PERSONAS (Nombres) -->
+          <div class="results-group" *ngIf="resultadosPersonas.length > 0">
+            <h4 class="group-header">Padrón de Identidades</h4>
+            <div
+              class="result-item"
+              *ngFor="let persona of resultadosPersonas"
+              (click)="seleccionarPersona(persona)"
+            >
+              <div class="item-icon bg-blue-light">
+                <i class="bi bi-person-bounding-box text-blue"></i>
+              </div>
+              <div class="item-details">
+                <span class="item-title"
+                  >{{ persona.nombre }} {{ persona.primerApellido }}
+                  {{ persona.segundoApellido }}</span
+                >
+                <span class="item-subtitle">CURP: {{ persona.curp }}</span>
+              </div>
+
+              <!-- Etiqueta si la persona tiene un expediente vinculado -->
+              <div class="item-badge badge-active" *ngIf="persona.expedientesAsociados?.length">
+                Expediente: {{ persona.expedientesAsociados[0] }}
+              </div>
+            </div>
+          </div>
+
+          <!-- BLOQUE 3: ESTADO VACÍO (Radar sin contactos) -->
+          <div
+            class="empty-state"
+            *ngIf="
+              !buscando &&
+              resultadosExpedientes.length === 0 &&
+              resultadosPersonas.length === 0 &&
+              terminoBusqueda.length > 2
+            "
+          >
+            <div class="empty-icon pulse-glow"><i class="bi bi-radar"></i></div>
+            <h4>Radar sin contactos</h4>
+            <p>No se encontraron registros para "{{ terminoBusqueda }}".</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- ESTADO 2: VISOR DEL EXPEDIENTE                 -->
+      <!-- ============================================== -->
+      <div class="visor-state fade-in" *ngIf="vistaActual === 'visor' && expedienteSeleccionado">
+        <!-- Botón Volver -->
+        <button class="btn-back-link mb-4" (click)="volverABuscar()">
+          <i class="bi bi-arrow-left"></i> Volver a los resultados de búsqueda
+        </button>
+
+        <br>
+
+        <div class="visor-grid" [class.loading-shimmer]="cargandoVisor">
+          <!-- Columna 1: Perfil Académico -->
+          <div class="visor-card">
+            <div class="card-icon bg-blue-light">
+              <i class="bi bi-mortarboard-fill text-blue"></i>
+            </div>
+            <h3>Perfil Académico</h3>
+            <div class="data-list">
+              <div class="data-row">
+                <span>Nivel</span><strong>{{ expedienteSeleccionado.nivel }}</strong>
+              </div>
+              <div class="data-row">
+                <span>Carrera</span><strong>{{ expedienteSeleccionado.carrera }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna 2: Coordenadas Físicas -->
+          <div class="visor-card border-guinda">
+            <div class="card-icon bg-guinda-light">
+              <i class="bi bi-archive-fill text-guinda"></i>
+            </div>
+            <h3>Coordenadas Físicas</h3>
+            <div class="data-list">
+              <div class="data-row">
+                <span>Edificio</span
+                ><strong>{{ expedienteSeleccionado.ubicacion.edificio || 'Central' }}</strong>
+              </div>
+              <div class="data-row highlight-row">
+                <span>Caja Fija</span><strong>{{ expedienteSeleccionado.ubicacion.caja }}</strong>
+              </div>
+              <div class="data-row highlight-row">
+                <span>Carpeta</span><strong>{{ expedienteSeleccionado.ubicacion.carpeta }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna 3: Anexos -->
+          <div class="visor-card">
+            <div class="card-icon bg-gold-light">
+              <i class="bi bi-file-earmark-medical-fill text-warning"></i>
+            </div>
+            <h3>Anexos</h3>
+            <div class="data-list">
+              <div class="data-row">
+                <span>Conservación</span
+                ><strong>{{ expedienteSeleccionado.ubicacion.estadoConservacion }}</strong>
+              </div>
+              <div class="data-row mt-2 text-center">
+                <span class="anexos-badge"
+                  ><i class="bi bi-paperclip"></i>
+                  {{ expedienteSeleccionado.archivos?.length || 0 }} Docs. Digitalizados</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PIE DEL MODAL (Dinámico) -->
+    <div class="modal-footer">
+      <ng-container *ngIf="vistaActual === 'buscar'">
+        <button class="btn-ghost" (click)="cerrarModal()">Cancelar</button>
+      </ng-container>
+      
+      <ng-container *ngIf="vistaActual === 'visor'">
+        <button class="btn-ghost" (click)="cerrarModal()">Cerrar Visor</button>
+        
+        <!-- Botón de Imprimir Carátula (Tu código existente) -->
+        <button class="btn-ghost" (click)="imprimirCaratula()">
+          <i class="bi bi-printer"></i> Imprimir Carátula
+        </button>
+
+        <!-- NUEVO BOTÓN INTELIGENTE: Solo sale si el expediente está ACTIVO (en el archivo) -->
+        <button class="btn-guinda shadow-btn" 
+                *ngIf="expedienteSeleccionado?.estatus === 'ACTIVO'" 
+                (click)="abrirModalPrestamo()">
+          <i class="bi bi-box-arrow-right me-2"></i> Prestar Expediente
+        </button>
+
+        <!-- Mensaje si ya está prestado -->
+        <button class="btn-ghost" style="color: #d97706; border-color: #d97706;"
+                *ngIf="expedienteSeleccionado?.estatus === 'TRANSITO'" disabled>
+          <i class="bi bi-sign-stop me-2"></i> Documento en Tránsito
+        </button>
+      </ng-container>
+    </div>
+  </div>
+  <!-- ============================================== -->
+<!-- MODAL HIJO: PUNTO DE CONTROL DE PRÉSTAMOS      -->
+<!-- ============================================== -->
+<app-modal-prestar-fisico 
+  *ngIf="mostrarModalPrestamo" 
+  [expedienteSeleccionado]="expedienteSeleccionado" 
+  (close)="cerrarModalPrestamo()" 
+  (prestamoExitoso)="manejarPrestamoExitoso($event)">
+</app-modal-prestar-fisico>
+</div>
+
+

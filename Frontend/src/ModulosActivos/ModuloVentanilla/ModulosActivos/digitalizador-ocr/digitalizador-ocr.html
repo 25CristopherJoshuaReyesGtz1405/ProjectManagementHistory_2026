@@ -1,0 +1,230 @@
+<!-- digitalizador-ocr.html -->
+<div class="dashboard-page custom-scroll">
+  <!-- 1. ENCABEZADO A ANCHO COMPLETO -->
+  <header class="page-header animate-slide-in-left">
+    <div class="header-content">
+      <span class="badge-date">
+        <i class="bi bi-calendar3"></i> {{ today | date: "EEEE, dd 'de' MMMM" }}
+      </span>
+
+      <h1 class="titulo-principal">Centro de Digitalización Forense</h1>
+      <p class="subtitle">Captura, Análisis y Transcripción de Expedientes Físicos</p>
+
+      <div class="executive-briefing mt-3">
+        <div class="briefing-icon pulse-glow"><i class="bi bi-upc-scan"></i></div>
+        <p>
+          <strong>Módulo Activo:</strong> El motor de Inteligencia Artificial (OCR) está calibrado.
+          Para una precisión óptima, asegúrese de que el documento no presente
+          <span class="text-danger font-bold">desgaste severo</span> y cuente con
+          <span class="font-bold">buena iluminación</span> al capturarlo.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. TELEMETRÍA DE SESIÓN (Debajo del encabezado, a lo ancho) -->
+  <section class="kpi-grid mt-4">
+    <app-tarjeta-stadistic
+      titulo="Procesados Hoy"
+      valor="14"
+      tendenciaTexto="Faltan 2 para meta"
+      icono="bi-files"
+      claseFondoIcono="bg-guinda-light"
+      claseColorIcono="text-guinda"
+      iconoMarcaAgua="bi-clipboard-data"
+      delayAnimacion="delay-100"
+    ></app-tarjeta-stadistic>
+
+    <app-tarjeta-stadistic
+      titulo="Certeza de IA"
+      [valor]="(precisionOcr | number: '1.0-1') + '%'"
+      tendenciaTexto="Nivel Óptimo"
+      icono="bi-bullseye"
+      claseFondoIcono="bg-blue-light"
+      claseColorIcono="text-blue"
+      iconoMarcaAgua="bi-cpu"
+      delayAnimacion="delay-200"
+    ></app-tarjeta-stadistic>
+
+    <app-tarjeta-stadistic
+      titulo="Estado Servidor"
+      valor="Activo"
+      tendenciaTexto="Latencia: 12ms"
+      icono="bi-hdd-network"
+      claseFondoIcono="bg-green-light"
+      claseColorIcono="text-success"
+      iconoMarcaAgua="bi-cloud-check"
+      delayAnimacion="delay-300"
+    ></app-tarjeta-stadistic>
+  </section>
+
+  <!-- 3. EL COMPONENTE OCR (El área de trabajo) -->
+  <article class="widget-card animate-slide-up delay-400 mt-4">
+    <div class="widget-header-premium">
+      <!-- ... Resto del widget intacto ... -->
+    </div>
+  </article>
+
+  <!-- EL COMPONENTE OCR (Ligeramente separado del header por mt-4) -->
+  <article class="widget-card animate-slide-up delay-200 mt-4">
+    <div class="widget-header-premium">
+      <div class="title-group">
+        <h3>Motor Óptico de Digitalización</h3>
+        <p>Extracción inteligente de texto documental (OCR)</p>
+      </div>
+      <button class="btn-icon-outline" title="Reiniciar escaneo" (click)="reiniciarEscaneo()">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+
+    <div class="widget-body p-4 main-layout-ocr">
+      <!-- Zona Izquierda: Captura Phygital (Drag & Drop + Cámara) -->
+      <div class="col-upload">
+        <div
+          class="drag-drop-zone"
+          [class.drag-active]="arrastrando"
+          [class.camera-active]="modoCamara"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="!modoCamara ? onDrop($event) : null"
+        >
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" hidden />
+
+          <!-- ESTADO 1: Placeholder Normal -->
+          <ng-container *ngIf="!imagenPreview && !modoCamara">
+            <div class="upload-placeholder">
+              <div class="icon-squircle">
+                <i class="bi bi-cloud-arrow-up text-guinda"></i>
+              </div>
+              <h4 class="text-dark">Arrastra el documento físico</h4>
+              <p class="text-secondary">o utiliza la cámara para captura directa</p>
+
+              <!-- Botones Neo-Flat gemelos -->
+              <div class="mt-4 flex-center action-buttons-group">
+                <button class="btn-square-outline" (click)="activarCamara()">
+                  <i class="bi bi-camera text-guinda"></i>
+                  <span>Usar<br />Cámara</span>
+                </button>
+                <button class="btn-square-outline" (click)="fileInput.click()">
+                  <i class="bi bi-folder2-open text-blue"></i>
+                  <span>Explorar<br />Archivos</span>
+                </button>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ESTADO 2: Cámara Activa (Visor en Vivo) -->
+          <ng-container *ngIf="modoCamara">
+            <div class="live-camera-container">
+              <!-- El feed de video en tiempo real -->
+              <video #videoElement autoplay playsinline muted class="camera-feed"></video>
+
+              <!-- Interfaz del Obturador (Shutter UI) -->
+              <div class="camera-overlay-ui">
+                <button class="btn-camera-close" (click)="apagarCamara()" title="Cancelar">
+                  <i class="bi bi-x-lg"></i>
+                </button>
+
+                <div class="shutter-container">
+                  <button class="btn-shutter" (click)="capturarFotografia()"></button>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- ESTADO 3: Vista Previa y Procesamiento OCR -->
+          <ng-container *ngIf="imagenPreview && !modoCamara">
+            <div class="image-preview-container">
+              <img [src]="imagenPreview" alt="Documento escaneado" />
+
+              <div class="image-overlay" *ngIf="procesando">
+                <div class="progress-labels">
+                  <span>Analizando estructura tipográfica...</span>
+                  <strong>{{ progresoOcr * 100 | number: '1.0-0' }}%</strong>
+                </div>
+                <div class="progress-bar-container">
+                  <div class="progress-fill bg-guinda" [style.width.%]="progresoOcr * 100"></div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+      <!-- Zona Derecha: Visor Forense de Alta Gama -->
+      <div class="col-result">
+        <div class="result-header">
+          <h4 class="text-dark"><i class="bi bi-cpu text-blue"></i> Consola de Transcripción</h4>
+          <span class="badge" [ngClass]="textoExtraido ? 'green' : procesando ? 'warning' : 'red'">
+            {{ textoExtraido ? 'COMPLETADO' : procesando ? 'PROCESANDO' : 'ESPERANDO DATOS' }}
+          </span>
+        </div>
+
+        <!-- NUEVO: Panel de Telemetría (Solo visible si hay resultados) -->
+        <div class="telemetry-panel" *ngIf="textoExtraido && !procesando">
+          <div class="telemetry-item" tooltip="Certeza matemática de la Inteligencia Artificial">
+            <i class="bi bi-bullseye text-guinda"></i>
+            <span
+              >Confianza IA: <strong>{{ precisionOcr | number: '1.0-1' }}%</strong></span
+            >
+          </div>
+          <div class="telemetry-item">
+            <i class="bi bi-file-word text-blue"></i>
+            <span
+              >Palabras: <strong>{{ conteoPalabras }}</strong></span
+            >
+          </div>
+          <div class="telemetry-item">
+            <i class="bi bi-stopwatch text-warning"></i>
+            <span
+              >Tiempo: <strong>{{ tiempoProcesamiento }}</strong></span
+            >
+          </div>
+        </div>
+
+        <div class="textarea-container mt-3">
+          <!-- NUEVO: Barra Táctica sobre el texto -->
+          <div class="tactical-toolbar" *ngIf="textoExtraido">
+            <div class="toolbar-left">
+              <span class="toolbar-label">DOCUMENTO RAW</span>
+            </div>
+            <div class="toolbar-right">
+              <button class="tool-btn" (click)="copiarTexto()" title="Copiar al portapapeles">
+                <i class="bi bi-copy"></i>
+              </button>
+              <button class="tool-btn" (click)="descargarTxt()" title="Descargar como .txt">
+                <i class="bi bi-download"></i>
+              </button>
+            </div>
+          </div>
+
+          <textarea
+            class="result-textarea custom-scroll"
+            [class.has-toolbar]="textoExtraido"
+            placeholder="El texto digitalizado del expediente aparecerá aquí con formato puro..."
+            [(ngModel)]="textoExtraido"
+            [disabled]="procesando"
+          >
+          </textarea>
+        </div>
+
+        <!-- Botón de Acción Principal (Ancho completo) -->
+        <div class="actions-footer mt-4" *ngIf="textoExtraido">
+          <button class="btn-flat success full-width" (click)="guardarExpediente()">
+            <i class="bi bi-shield-check"></i> Enviar a Base de Datos (Auditoría)
+          </button>
+        </div>
+
+        <!-- Panel de Acciones (Oculto hasta que haya texto) -->
+        <div class="actions-footer mt-4" *ngIf="textoExtraido">
+          <button class="btn-flat primary" (click)="copiarTexto()">
+            <i class="bi bi-clipboard-check"></i> Copiar Texto
+          </button>
+          <button class="btn-flat success" (click)="guardarExpediente()">
+            <i class="bi bi-shield-check"></i> Auditar Registro
+          </button>
+        </div>
+      </div>
+    </div>
+  </article>
+</div>

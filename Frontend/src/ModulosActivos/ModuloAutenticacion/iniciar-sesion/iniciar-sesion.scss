@@ -1,0 +1,310 @@
+/* --- Variables de Configuración --- */
+:host {
+  --slide-duration: 7s;
+  --total-slides: 8;
+  --total-duration: calc(var(--slide-duration) * var(--total-slides));
+  --fuente-principal: 'Roboto', sans-serif;
+  --color-error: #ef4444;
+  --glass: #dfdfdf;
+}
+
+/* --- Contenedor Principal --- */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+  font-family: var(--fuente-principal);
+  position: relative;
+  overflow: hidden;
+  background-color: #0f172a; /* Color de fondo base de seguridad */
+}
+
+/* =======================================================
+   1. ANIMACIONES DE FONDO (CARRUSEL INMERSIVO)
+   ======================================================= */
+.background-slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.slider-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  //background: linear-gradient(135deg, rgba(90, 18, 28, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%);
+  z-index: 2;
+  transition: background 0.4s ease;
+}
+
+/* NUEVA FORMA EN ANGULAR PARA DETECTAR EL MODO OSCURO GLOBAL */
+:host-context(.dark-theme) .slider-overlay {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.7) 0%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  animation:
+    kenBurns 20s infinite alternate,
+    imageFade var(--total-duration) infinite;
+}
+
+/* Rutas de las imágenes (ajusta si tus assets están en otra carpeta) */
+.slide-1 {
+  background-image: url('../../../../public/ITD_Imagen_01.png');
+  animation-delay: 0s, 0s;
+}
+.slide-2 {
+  background-image: url('../../../../public/ITD_Imagen_02.png');
+  animation-delay: 0s, var(--slide-duration);
+}
+.slide-3 {
+  background-image: url('../../../../public/ITD_Imagen_03.png');
+  animation-delay: 0s, calc(var(--slide-duration) * 2);
+}
+.slide-4 {
+  background-image: url('../../../../public/ITD_Imagen_04.png');
+  animation-delay: 0s, calc(var(--slide-duration) * 3);
+}
+.slide-5 {
+  background-image: url('../../../../public/ITD_Imagen_05.png');
+  animation-delay: 0s, calc(var(--slide-duration) * 4);
+}
+.slide-6 {
+  background-image: url('../../../../public/ITD_Imagen_06.png');
+  animation-delay: 0s, calc(var(--slide-duration) * 5);
+}
+.slide-7 {
+  background-image: url('../../../../public/ITD_Imagen_02.png');
+  animation-delay: 0s, calc(var(--slide-duration) * 6);
+}
+.slide-8 {
+  background-image: url('../../../../public/ITD_Imagen_01.png');
+  animation-delay: 0s, calc(var(--slide-duration) * 7);
+}
+
+@keyframes imageFade {
+  0% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  12.5% {
+    opacity: 1;
+  }
+  14.5% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes kenBurns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.15);
+  }
+}
+
+/* =======================================================
+   2. TARJETA DE CRISTAL (GLASSMORPHISM)
+   ======================================================= */
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 3.5rem 2.5rem;
+  border-radius: 24px;
+
+  /* --- ESTA ES LA CLAVE DE LA TRANSPARENCIA PREMIUM (GLASSMORPHISM) --- */
+
+  /* Reducimos la opacidad para un cristal mucho más claro. 
+     - Claro: Usaremos un blanco ultra-translúcido con un tinte guinda muy sutil.
+     - Oscuro (Fallback): Si las variables no existen, usamos un blanco translúcido. */
+  background: var(--glass-bg, rgba(255, 255, 255, 0.45));
+
+  /* CRUCIAL: Aumentamos el desenfoque para que el texto sea perfectamente legible sobre el fondo. */
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+
+  /* Hacemos el borde más fino y elegante, con un sutil tinte dorado. */
+  border: 1px solid var(--glass-border, rgba(197, 160, 89, 0.15));
+
+  /* Proporcionamos una sombra muy suave y difusa que imita un resplandor institucional (Guinda) para que el cristal flote. */
+  box-shadow: 0 15px 50px rgba(90, 18, 28, 0.08);
+
+  /* --- (Mantenemos position, z-index, animation, transition) --- */
+  position: relative;
+  z-index: 3;
+  animation: scaleUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition:
+    background 0.4s ease,
+    border-color 0.4s ease;
+
+  /* =======================================================
+     ADAPTACIÓN MODO OSCURO (ULTRA PREMIUM)
+     Haremos un cristal ahumado oscuro, pero aún translúcido.
+     ======================================================= */
+  :host-context(.dark-theme) .login-card {
+    background: rgba(15, 23, 42, 0.45) !important; /* Cristal ahumado transparente */
+    border-color: rgba(197, 160, 89, 0.3);
+    box-shadow: 0 15px 50px rgba(197, 160, 89, 0.1);
+  }
+
+  /* =======================================================
+     NUEVA REGLA PARA CELULARES (RESPONSIVIDAD)
+     ======================================================= */
+  @media (max-width: 500px) {
+    padding: 2rem 1.5rem; /* Reducimos el espacio interior dramáticamente */
+    max-width: 92%; /* Evita que la tarjeta toque los bordes físicos del celular */
+    border-radius: 20px;
+
+    /* Hacemos el logo un poco más pequeño en celular */
+    .login-header .logo {
+      height: 90px;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+/* --- Cabecera de la Tarjeta --- */
+.login-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+
+  .logo {
+    height: 110px;
+    margin: 0 auto 1.5rem auto;
+    display: block;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.15));
+  }
+
+  .titulo-principal {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary, #5a121c); /* Guinda por defecto si no hay variable */
+    text-shadow: 0px 1px 3px rgba(255,255,255,0.8); // Borde blanco sutil para que siempre se lea
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 0.5px;
+  }
+
+  .subtitulo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary, #5a121c); /* Guinda por defecto si no hay variable */
+    text-shadow: 0px 1px 3px rgba(255,255,255,0.8); // Borde blanco sutil para que siempre se lea
+    letter-spacing: 1px;
+    margin: 0;
+  }
+}
+
+/* --- Formulario --- */
+.form-group {
+  margin-bottom: 1.2rem;
+
+  .label-text {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary, #333);
+    margin-bottom: 0.6rem;
+    padding-left: 0.5rem;
+    //text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin: 1rem 0 2.5rem 0;
+
+  .forgot-link {
+    color: var(--guinda-main, #990707);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    :host-context(.dark-theme) .forgot-link {
+      color: var(--dorado-main, #c5a059);
+    }
+
+    &:hover {
+      text-decoration: underline;
+      opacity: 0.8;
+    }
+  }
+}
+
+/* --- Alertas de Error --- */
+.error-container {
+  color: var(--color-error);
+  background-color: rgba(239, 68, 68, 0.1);
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+/* --- Animaciones Utilitarias --- */
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "@angular/fire": "^20.0.1",
+    "@google-cloud/pubsub": "^6.0.1",
+    "@google/genai": "^2.10.0",
+    "@google/generative-ai": "^0.24.1",
+    "cors": "^2.8.6",
+    "csv-parser": "^3.2.0",
+    "express": "^5.2.1",
+    "firebase": "^12.10.0",
+    "firebase-admin": "^13.7.0",
+    "helmet": "^8.1.0",
+    "multer": "^2.1.1",
+    "node-cron": "^4.5.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.5.0",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

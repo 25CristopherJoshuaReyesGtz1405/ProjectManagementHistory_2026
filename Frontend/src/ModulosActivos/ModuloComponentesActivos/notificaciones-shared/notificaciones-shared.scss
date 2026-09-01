@@ -1,0 +1,148 @@
+/* ModuloComponentesActivos/notificaciones-shared/notificaciones-shared.scss */
+/* --- Reemplazamos las variables fijas por las globales del tema --- */
+:host {
+  --color-exito: #10B981;
+  --color-error: #EF4444;
+  --color-info: #3B82F6;
+  --color-warning: #F59E0B;
+}
+
+.contenedor-toasts {
+  position: fixed; top: 20px; right: 20px; z-index: 11000;
+  display: flex; flex-direction: column; gap: 12px; pointer-events: none;
+}
+
+.toast-card {
+  pointer-events: auto;
+  width: 300px;
+  background-color: var(--bg-card); /* Blanco en día, Oscuro en noche */
+  color: var(--text-primary);
+  border-radius: 24px;
+  padding: 1.4rem;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  display: flex; align-items: flex-start; gap: 12px;
+  border-left: 5px solid transparent;
+  
+  &.exito { border-left-color: var(--color-exito); .icono { color: var(--color-exito); } }
+  &.error { border-left-color: var(--color-error); .icono { color: var(--color-error); } }
+  &.info { border-left-color: var(--color-info); .icono { color: var(--color-info); } }
+
+  .icono { font-size: 1.4rem; margin-top: 2px; }
+  .contenido { flex: 1; }
+  .titulo { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+  .mensaje { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; }
+  
+  .btn-cerrar {
+    background: none; border: none; font-size: 1.2rem;
+    color: var(--text-secondary); cursor: pointer; padding: 0;
+    &:hover { color: var(--text-primary); }
+  }
+
+  &.entrada { animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  &.salida { animation: fadeOutRight 0.3s ease-in forwards; }
+}
+
+/* MODAL DE CONFIRMACIÓN */
+.modal-backdrop {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 10000; padding: 1.5rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  width: 100%; max-width: 400px;
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-body {
+  padding: 2.5rem 2rem 1.5rem 2rem;
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1rem;
+}
+
+.texto-wrapper {
+  .titulo { font-size: 1.3rem; font-weight: 700; margin: 0 0 0.5rem 0; }
+  .mensaje { font-size: 0.95rem; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+}
+
+.modal-footer {
+  display: flex; justify-content: flex-end; gap: 1rem;
+  padding: 1.25rem 2rem;
+  background-color: var(--bg-app);
+  border-top: 1px solid var(--border-color);
+}
+
+.logo-colegio
+{
+  align-items: center;
+  display: flex;
+
+  height: 50px;
+  width: 50px;
+}
+
+/* =========================================================
+   MODAL DE CARGA Y PROCESAMIENTO (OCR / BACKEND)
+   ========================================================= */
+
+/* Cursor de espera y bloqueo estricto */
+.intercept-clicks {
+  cursor: wait;
+}
+
+/* Modificador para hacer la tarjeta más compacta y centrada */
+.loading-style {
+  max-width: 320px;
+  border: 1px solid rgba(90, 18, 28, 0.3); /* Borde sutil guinda */
+  box-shadow: 0 10px 40px rgba(90, 18, 28, 0.15); /* Resplandor institucional */
+  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* El Contenedor del Escáner */
+.optical-scanner {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background: var(--bg-app);
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed var(--border-color);
+  overflow: hidden;
+
+  /* Ícono de código de barras / documento de fondo */
+  .scanner-icon {
+    font-size: 2.5rem;
+    color: var(--text-secondary);
+    opacity: 0.5;
+  }
+
+  /* El Láser Animado */
+  .scanner-laser {
+    position: absolute;
+    top: 0;
+    left: 5%;
+    width: 90%;
+    height: 2px;
+    background: #5a121c; /* Guinda Main */
+    box-shadow: 0 0 8px #5a121c, 0 0 15px #5a121c;
+    animation: scanLaser 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+  }
+}
+
+/* Animación del láser barriendo el documento */
+@keyframes scanLaser {
+  0% { top: 10%; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { top: 90%; opacity: 0; }
+}

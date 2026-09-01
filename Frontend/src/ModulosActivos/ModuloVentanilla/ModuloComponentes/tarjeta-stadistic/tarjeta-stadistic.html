@@ -1,0 +1,34 @@
+<div class="kpi-card ultra-premium">
+  
+  <div class="card-glow" [ngClass]="claseFondoIcono"></div>
+  
+  <div class="watermark">
+    <i class="bi" [ngClass]="watermarkToUse"></i>
+  </div>
+  
+  <div class="kpi-content">
+    <div class="kpi-header">
+      <span class="kpi-label">{{ titulo }}</span>
+      <div class="icon-ring" [ngClass]="claseFondoIcono + ' ' + claseColorIcono">
+        <i class="bi" [ngClass]="iconToUse"></i>
+      </div>
+    </div>
+    
+    <div class="kpi-body">
+      <h3 class="kpi-value">{{ valor }}</h3>
+      <span class="badge-tag" [ngClass]="claseFondoIcono + ' ' + claseColorIcono" *ngIf="tendenciaTexto">
+        <i class="bi" [ngClass]="iconoTendencia" *ngIf="iconoTendencia"></i> {{ tendenciaTexto }}
+      </span>
+    </div>
+  </div>
+
+  <div class="kpi-footer" *ngIf="descripcion || progreso > 0 || footerIcono">
+    <div class="mini-progress" *ngIf="progreso > 0">
+      <div class="fill" [ngClass]="claseFondoIcono" [style.width.%]="progreso"></div>
+    </div>
+    <span class="status-text" *ngIf="descripcion || footerIcono">
+      <i class="bi" [ngClass]="footerIcono" *ngIf="footerIcono"></i> {{ descripcion }}
+    </span>
+  </div>
+
+</div>

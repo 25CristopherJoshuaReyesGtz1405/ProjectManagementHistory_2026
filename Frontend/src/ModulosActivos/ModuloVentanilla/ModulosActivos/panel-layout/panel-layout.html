@@ -1,0 +1,17 @@
+<div class="layout-wrapper" [class.mobile-menu-active]="isMobileMenuOpen">
+  
+  <app-panel-lateral-ventanilla 
+    [isMobileOpen]="isMobileMenuOpen" 
+    (closeMobileMenu)="toggleMobileMenu()">
+  </app-panel-lateral-ventanilla>
+
+  <div class="sidebar-overlay" *NgIf="isMobileMenuOpen" (click)="toggleMobileMenu()"></div>
+
+  <div class="main-content-wrapper">
+    <app-panel-superior-ventanilla (toggleSidebar)="toggleMobileMenu()"></app-panel-superior-ventanilla>
+
+    <main class="page-content custom-scroll">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

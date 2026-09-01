@@ -1,0 +1,132 @@
+<div class="modal-backdrop fade-in" (click)="cerrarModal()">
+  <div class="premium-glass-modal form-modal animate-slide-up" (click)="$event.stopPropagation()">
+    
+    <!-- CABECERA INSTITUCIONAL Y CONTROLES -->
+    <header class="modal-header guinda-institutional">
+      <div class="header-content">
+        <span class="badge-tag"><i class="bi bi-folder-plus me-1"></i> Archivo Histórico</span>
+        <div class="header-titles">
+          <h2>Apertura de Nuevo Expediente</h2>
+          <p>Ingrese los datos del alumno para inicializar el resguardo documental</p>
+        </div>
+      </div>
+      
+      <!-- Controles de la esquina superior derecha -->
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <button class="btn-mic" [class.escuchando]="escuchandoVoz" (click)="toggleDictado()" title="Dictar datos">
+          <i class="bi" [ngClass]="escuchandoVoz ? 'bi-mic-fill' : 'bi-mic'"></i>
+          {{ escuchandoVoz ? 'Escuchando...' : 'Dictar' }}
+        </button>
+        
+        <button class="btn-close-white" (click)="cerrarModal()" [disabled]="guardando">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- CUERPO DEL MODAL -->
+    <div class="modal-body custom-scroll">
+      <form class="premium-form grid-layout" (ngSubmit)="guardar()" #expedienteForm="ngForm">
+        
+        <!-- SECCIÓN 1: DATOS DEL ALUMNO -->
+        <div class="form-section">
+          <h3 class="section-title"><i class="bi bi-person-bounding-box"></i> Datos del Alumno</h3>
+          
+          <div class="inputs-container">
+            <div class="input-group">
+              <label>Matrícula / Folio <span class="req">*</span></label>
+              <div class="input-wrapper">
+                <i class="bi bi-123 icon"></i>
+                <input type="text" [(ngModel)]="expediente.matricula" name="matricula"
+                       (ngModelChange)="validarMatricula()" placeholder="Ej. 22041100" required autocomplete="off">
+              </div>
+              <small class="hint-text text-guinda" *ngIf="mostrarMotivoTraslado">
+                <i class="bi bi-info-circle-fill"></i> Clave foránea detectada.
+              </small>
+            </div>
+
+            <div class="input-row">
+              <div class="input-group">
+                <label>Nombre(s) <span class="req">*</span></label>
+                <div class="input-wrapper">
+                  <i class="bi bi-person icon"></i>
+                  <input type="text" [(ngModel)]="expediente.nombre" name="nombre" placeholder="Nombre(s)" required>
+                </div>
+              </div>
+              <div class="input-group">
+                <label>Apellidos <span class="req">*</span></label>
+                <div class="input-wrapper">
+                  <i class="bi bi-person-vcard icon"></i>
+                  <input type="text" [(ngModel)]="expediente.apellidos" name="apellidos" placeholder="Apellidos" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="input-group">
+              <label>Carrera <span class="req">*</span></label>
+              <div class="select-wrapper">
+                <i class="bi bi-mortarboard icon"></i>
+                <select [(ngModel)]="expediente.carrera" name="carrera" required>
+                  <option value="" disabled selected>Seleccione la carrera...</option>
+                  <option value="Ingeniería en Sistemas Computacionales">Ingeniería en Sistemas Computacionales</option>
+                  <option value="Ingeniería Industrial">Ingeniería Industrial</option>
+                  <option value="Ingeniería Civil">Ingeniería Civil</option>
+                  <option value="Arquitectura">Arquitectura</option>
+                  <option value="Licenciatura en Administración">Licenciatura en Administración</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: PROCEDENCIA O ESTADO NATIVO -->
+        <div class="form-section bg-glass-section">
+          
+          <div class="dynamic-section" [class.show]="mostrarMotivoTraslado">
+            <h3 class="section-title warning-title"><i class="bi bi-airplane"></i> Procedencia Externa</h3>
+            <p class="section-desc">Se detectó una clave distinta al ITD (04).</p>
+            
+            <div class="inputs-container">
+              <div class="input-group">
+                <label>Motivo de Ingreso <span class="req">*</span></label>
+                <div class="select-wrapper">
+                  <i class="bi bi-arrow-left-right icon"></i>
+                  <select [(ngModel)]="expediente.motivoIngreso" name="motivoIngreso" [required]="mostrarMotivoTraslado">
+                    <option value="" disabled selected>Seleccione el motivo...</option>
+                    <option value="Movilidad Estudiantil">Movilidad Estudiantil</option>
+                    <option value="Cambio de Especialidad">Cambio de Especialidad</option>
+                    <option value="Traslado">Traslado</option>
+                  </select>
+                </div>
+              </div>
+              <div class="input-group">
+                <label>Institución de Origen <span class="req">*</span></label>
+                <div class="input-wrapper">
+                  <i class="bi bi-bank icon"></i>
+                  <input type="text" [(ngModel)]="expediente.tecnologicoOrigen" name="tecnologicoOrigen" [required]="mostrarMotivoTraslado" placeholder="Ej. Tec de Monterrey">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="itd-native-badge" *ngIf="!mostrarMotivoTraslado">
+            <div class="pulse-ring"><i class="bi bi-shield-check"></i></div>
+            <h4>Matrícula Nativa ITD</h4>
+            <p>Registro estándar para Servicios Escolares.</p>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- PIE DEL MODAL -->
+    <div class="modal-footer">
+      <button type="button" class="btn-ghost" (click)="cerrarModal()" [disabled]="guardando">Cancelar</button>
+      <button type="button" class="btn-guinda shadow-btn" (click)="guardar()" [disabled]="!expedienteForm.valid || guardando">
+        <i class="bi" [ngClass]="guardando ? 'bi-arrow-repeat spin-icon' : 'bi-save2-fill'"></i> 
+        {{ guardando ? 'Generando Folio...' : 'Crear Expediente' }}
+      </button>
+    </div>
+
+  </div>
+</div>

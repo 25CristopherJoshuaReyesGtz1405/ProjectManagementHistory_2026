@@ -1,0 +1,484 @@
+/* digitalizador-ocr.scss */
+
+/* --- VARIABLES INSTITUCIONALES --- */
+$guinda: #5a121c;
+$blue: #2563eb;
+$green: #059669;
+$danger: #ef4444;
+$warning: #f59e0b;
+
+.dashboard-page {
+  padding: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* === WIDGET CARD (Nuevo Estilo Neo-Flat) === */
+.widget-card {
+  background: var(--bg-card); /* Usa el fondo oscuro profundo o blanco según el tema */
+  border-radius: 16px;
+  border: 1px solid var(--border-color); /* Borde sutil de 1px */
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.widget-header-premium {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  h3 { margin: 0 0 4px; font-size: 1.15rem; font-weight: 800; color: var(--text-primary); }
+  p { margin: 0; font-size: 0.85rem; color: var(--text-secondary); font-weight: 400; }
+
+  /* Nuevo botón de recarga circular con borde */
+  .btn-icon-outline {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: grid; place-items: center;
+    
+    &:hover { border-color: var(--text-primary); color: var(--text-primary); }
+  }
+}
+
+.widget-body { padding: 2rem; }
+
+.main-layout-ocr {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: stretch;
+  @media (max-width: 1024px) { grid-template-columns: 1fr; }
+}
+
+/* === ZONA IZQUIERDA: DRAG & DROP === */
+.col-upload { display: flex; flex-direction: column; }
+
+.drag-drop-zone {
+  border: 1px dashed var(--border-color); /* Borde discontinuo sutil */
+  border-radius: 16px;
+  background: transparent;
+  min-height: 400px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s ease;
+  position: relative; overflow: hidden;
+
+  &.drag-active, &:hover { 
+    border-color: var(--text-secondary); 
+    background: rgba(255, 255, 255, 0.02); 
+  }
+}
+
+.upload-placeholder {
+  text-align: center;
+  
+  .icon-squircle {
+    width: 60px; height: 60px; margin: 0 auto 1.5rem;
+    display: grid; place-items: center; font-size: 1.8rem;
+    border-radius: 16px; 
+    background: rgba(90, 18, 28, 0.05); /* Fondo muy tenue */
+    border: 1px solid rgba(90, 18, 28, 0.1);
+  }
+  
+  h4 { margin: 0 0 0.5rem; font-weight: 800; color: var(--text-primary); font-size: 1.05rem; }
+  p { font-size: 0.85rem; color: var(--text-secondary); margin: 0; }
+  .flex-center { display: flex; justify-content: center; }
+}
+
+/* Botón Cuadrado (Cargar Imagen) igual al diseño */
+.btn-square-outline {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.2rem;
+  width: 120px;
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  cursor: pointer; transition: all 0.2s ease;
+  
+  i { font-size: 1.5rem; }
+  span { font-size: 0.75rem; font-weight: 700; color: var(--text-primary); text-align: center; line-height: 1.2; }
+  
+  &:hover { border-color: var(--text-secondary); background: rgba(255, 255, 255, 0.03); }
+}
+
+/* === ZONA DERECHA: RESULTADO FORENSE === */
+.col-result {
+  display: flex; flex-direction: column;
+  background: transparent;
+  border-radius: 16px; 
+  border: 1px solid var(--border-color);
+  padding: 2rem;
+}
+
+.result-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);
+  h4 { margin: 0; font-weight: 800; font-size: 1.05rem; color: var(--text-primary); display: flex; gap: 8px; align-items: center;}
+}
+
+.textarea-container {
+  flex-grow: 1; 
+  background: var(--bg-app); /* Fondo ligeramente más oscuro/claro que la tarjeta */
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  
+  .result-textarea {
+    width: 100%; height: 100%; min-height: 280px;
+    background: transparent; border: none;
+    color: var(--text-primary); font-size: 0.95rem; line-height: 1.6;
+    resize: none; padding: 1.5rem; box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    
+    &:focus { outline: none; }
+    &::placeholder { color: var(--text-secondary); }
+  }
+}
+
+/* === NUEVOS BOTONES DE ACCIÓN FLAT === */
+.actions-footer {
+  display: flex; gap: 1rem; justify-content: flex-end;
+}
+
+.btn-flat {
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s ease;
+  
+  &.primary { background: rgba(37, 99, 235, 0.1); color: $blue; &:hover { background: rgba(37, 99, 235, 0.2); } }
+  &.success { background: rgba(5, 150, 105, 0.1); color: $green; &:hover { background: rgba(5, 150, 105, 0.2); } }
+}
+
+/* === UTILIDADES Y BADGES (Igual al diseño) === */
+.text-guinda { color: var(--guinda-main, $guinda); }
+.text-blue { color: $blue; }
+.badge {
+  padding: 6px 16px; border-radius: 30px; font-size: 0.7rem; font-weight: 900; color: white; letter-spacing: 0.5px;
+  &.red { background: $danger; }
+  &.green { background: $green; }
+  &.warning { background: $warning; }
+}
+
+/* Vista previa de imagen */
+.image-preview-container { position: relative; width: 100%; height: 100%; img { width: 100%; height: 100%; object-fit: contain; border-radius: 14px; } }
+.image-overlay { position: absolute; bottom: 0; left: 0; width: 100%; padding: 1.5rem; background: rgba(0,0,0,0.8); border-radius: 0 0 14px 14px; color: white; }
+.progress-labels { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 8px;}
+.progress-bar-container { height: 6px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; overflow: hidden;}
+.progress-fill { height: 100%; transition: width 0.3s ease; }
+
+/* digitalizador-ocr.scss */
+
+/* === 1. ESTILOS DEL ENCABEZADO DE PÁGINA (Sinergia Visual) === */
+.page-header {
+  margin-bottom: 2rem;
+  
+  .badge-date {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 6px 16px; border-radius: 36px;
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem; text-transform: capitalize;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+  
+  .titulo-principal {
+    font-size: 2.2rem; font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -1px; margin: 0 0 5px 0;
+  }
+  
+  .subtitle {
+    font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.5rem;
+  }
+}
+
+.executive-briefing {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--bg-card); /* Ajustado al Neo-Flat design */
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--guinda-main, #5a121c);
+  padding: 1rem 1.5rem; border-radius: 16px;
+  max-width: 850px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+
+  .briefing-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(90, 18, 28, 0.08);
+    color: var(--guinda-main, #5a121c);
+    display: grid; place-items: center;
+    font-size: 1.3rem; flex-shrink: 0;
+  }
+  
+  p { margin: 0; font-size: 0.95rem; color: var(--text-primary); line-height: 1.5; }
+  .font-bold { font-weight: 800; }
+}
+
+/* Animaciones del encabezado */
+.animate-slide-in-left {
+  opacity: 0; animation: fadeInLeft 0.6s ease-out forwards;
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* === TELEMETRÍA FORENSE (Data Visualization) === */
+.telemetry-panel {
+  display: flex;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.telemetry-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-app);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  
+  strong { color: var(--text-primary); font-weight: 800; font-family: monospace; font-size: 0.85rem;}
+  i { font-size: 0.9rem; }
+}
+
+/* === BARRA TÁCTICA DEL TEXTAREA === */
+.textarea-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.tactical-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.03); /* Contraste muy sutil */
+  border-bottom: 1px solid var(--border-color);
+  padding: 6px 12px;
+}
+
+.toolbar-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.toolbar-right {
+  display: flex;
+  gap: 4px;
+}
+
+.tool-btn {
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+  }
+}
+
+.result-textarea {
+  /* Si tiene la barra, quitamos el padding superior para que se una visualmente */
+  &.has-toolbar {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+}
+
+/* Botón ancho completo */
+.btn-flat.full-width {
+  width: 100%;
+  justify-content: center;
+  padding: 1rem;
+  font-size: 0.95rem;
+}
+
+/* === GRUPO DE BOTONES (Cámara y Archivo) === */
+.action-buttons-group {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+/* Evitamos el borde discontinuo si la cámara está activa para que el video llene el espacio */
+.drag-drop-zone.camera-active {
+  border: none;
+  background: #000;
+}
+
+/* === VISOR DE CÁMARA EN VIVO === */
+.live-camera-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #000;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.camera-feed {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Asegura que el video llene el contenedor sin deformarse */
+}
+
+/* UI Superpuesta de la Cámara */
+.camera-overlay-ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Botón de cerrar (Arriba a la derecha) */
+.btn-camera-close {
+  align-self: flex-end;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  
+  &:hover {
+    background: rgba(239, 68, 68, 0.8); /* Rojo peligro al pasar el mouse */
+  }
+}
+
+/* El botón del obturador estilo premium (Abajo centrado) */
+.shutter-container {
+  align-self: center;
+  margin-bottom: 1rem;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+}
+
+.btn-shutter {
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  
+  &:active {
+    transform: scale(0.9);
+    background: var(--guinda-main, #5a121c); /* Destello guinda al tomar foto */
+  }
+}
+
+/* digitalizador-ocr.scss */
+
+/* === 1. ESTILOS DEL ENCABEZADO DE PÁGINA === */
+.page-header {
+  margin-bottom: 2rem;
+  
+  .badge-date {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    padding: 6px 16px; border-radius: 36px;
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem; text-transform: capitalize;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+  
+  .titulo-principal {
+    font-size: 2.2rem; font-weight: 900;
+    color: var(--text-primary);
+    letter-spacing: -1px; margin: 0 0 5px 0;
+  }
+  
+  .subtitle {
+    font-size: 1rem; color: var(--text-secondary); margin-bottom: 1.5rem;
+  }
+}
+
+.executive-briefing {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--guinda-main, #5a121c);
+  padding: 1rem 1.5rem; border-radius: 16px;
+  max-width: 900px; /* Ancho holgado para pantallas grandes */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+
+  .briefing-icon {
+    width: 42px; height: 42px; border-radius: 12px;
+    background: rgba(90, 18, 28, 0.08);
+    color: var(--guinda-main, #5a121c);
+    display: grid; place-items: center;
+    font-size: 1.3rem; flex-shrink: 0;
+  }
+  
+  p { margin: 0; font-size: 0.95rem; color: var(--text-primary); line-height: 1.5; }
+  .font-bold { font-weight: 800; }
+}
+
+/* === 2. CUADRÍCULA DE TARJETAS (Heredada del Dashboard) === */
+.kpi-grid {
+  display: grid;
+  border-radius: 36px;
+  /* Auto-fit: Las tarjetas llenan el ancho. Minimo 250px de ancho cada una */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  margin-bottom: 1.0rem;
+  align-items: stretch;
+}
+
+.mt-4 {
+  margin-top: 1.5rem;
+}

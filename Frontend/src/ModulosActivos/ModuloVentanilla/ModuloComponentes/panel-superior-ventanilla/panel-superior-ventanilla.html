@@ -1,0 +1,66 @@
+<header class="topbar-console" *ngIf="usuario$ | async as perfil">
+  <button class="hamburger-btn" (click)="onToggleSidebar()" title="Abrir menú">
+    <i class="bi bi-list"></i>
+  </button>
+  <div class="user-identity-module">
+    <div class="avatar-bezel">
+      <span>{{ perfil.usuarioActual.nombreCompleto.charAt(0).toUpperCase() }}</span>
+    </div>
+    <div class="identity-text">
+      <h1 class="user-name">Hola, {{ perfil.usuarioActual.nombreCompleto.split(' ')[0] }}</h1>
+      <div class="role-tag">
+        <i class="bi bi-shield-check"></i> {{ perfil.usuarioActual.departamento }}
+      </div>
+    </div>
+  </div>
+
+  <div class="search-module">
+    <div class="search-display">
+      <i class="bi bi-search icon-left"></i>
+      <input type="text" placeholder="Localizar expediente por nombre, folio o matrícula...">
+      <div class="shortcut-hint">Ctrl + K</div>
+    </div>
+  </div>
+
+  <div class="actions-module">
+    
+    <div class="hardware-controls">
+      <button class="control-btn theme-toggle" (click)="temaService.alternarTema()" title="Iluminación">
+        <i class="bi" [ngClass]="(temaService.esOscuro$ | async) ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
+      </button>
+      
+      <button class="control-btn notification" title="Alertas">
+        <i class="bi bi-bell-fill"></i>
+        <span class="pulse-dot"></span>
+      </button>
+    </div>
+
+    <div class="hardware-divider"></div>
+
+    <div class="profile-dropdown-wrapper" (click)="toggleProfileMenu($event)">
+      <div class="profile-trigger">
+        <span class="full-name">{{ perfil.usuarioActual.nombreCompleto }}</span>
+        <i class="bi bi-chevron-down arrow" [class.open]="isProfileMenuOpen"></i>
+      </div>
+
+      <div class="dropdown-menu-card" *ngIf="isProfileMenuOpen" (click)="$event.stopPropagation()">
+        <div class="menu-header">
+          <p>Cuenta Institucional</p>
+          <span>{{ perfil.usuarioActual.email }}</span>
+        </div>
+
+        <div class="menu-body">
+          <a class="menu-item"><i class="bi bi-person-badge"></i> Mi Perfil</a>
+          <a class="menu-item"><i class="bi bi-sliders"></i> Preferencias</a>
+        </div>
+
+        <div class="menu-footer">
+          <button (click)="logout()" class="btn-logout-premium">
+            <i class="bi bi-power"></i> Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</header>

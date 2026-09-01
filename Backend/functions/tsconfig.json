@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "esModuleInterop": true,
+    "moduleResolution": "nodenext",
+    "outDir": "lib",
+    "rootDir": "src",
+    "sourceMap": true,
+    "strict": true,
+    "target": "es2017", 
+    "noImplicitReturns": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noImplicitAny": false,
+    "resolveJsonModule": true
+  },
+  "compileOnSave": true,
+  "include": [
+    "src"
+  ]
+}

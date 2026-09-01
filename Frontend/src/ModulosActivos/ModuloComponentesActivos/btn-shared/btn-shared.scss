@@ -1,0 +1,60 @@
+/* ModuloComponentesActivos/btn-shared/btn-shared.scss */
+.btn-custom {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-radius: 26px; /* Redondeado moderno, no píldora total */
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Roboto', sans-serif;
+
+  i { margin-right: 0.6rem; font-size: 1.2rem; }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* Estilo para el botón Sólido (Principal) */
+.solid {
+  background-color: var(--guinda-main);
+  color: #ffffff;
+  
+  &:hover:not(:disabled) {
+    background-color: #7a1826; /* Guinda un poco más claro para el hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(90, 18, 28, 0.4);
+  }
+}
+
+/* Estilo para el botón de Contorno (Secundario) */
+.outline {
+  background-color: transparent;
+  color: var(--guinda-main);
+  border-color: var(--guinda-main);
+  
+  /* En modo oscuro, el contorno guinda oscuro no se ve bien, usamos texto primario o dorado */
+  .dark-theme & {
+    color: var(--dorado-main);
+    border-color: var(--dorado-main);
+  }
+
+  &:hover:not(:disabled) {
+    background-color: var(--guinda-main);
+    color: #ffffff;
+    
+    .dark-theme & {
+      background-color: rgba(197, 160, 89, 0.1); /* Fondo dorado translúcido */
+      color: var(--dorado-main);
+    }
+  }
+}

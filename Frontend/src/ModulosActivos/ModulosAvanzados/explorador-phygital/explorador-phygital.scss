@@ -1,0 +1,157 @@
+/* ModulosAvanzados/ExploradorPhygital/ExploradorPhygital.component.scss */
+
+.hud-visor-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  /* Fondo transparente para permitir que la cámara del dispositivo sea visible */
+  background-color: transparent; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* === PANELES CON GLASSMORPHISM ADAPTABLE === */
+.hud-panel-superior, .hud-panel-inferior {
+  position: relative;
+  z-index: 10;
+  padding: 24px 40px;
+  /* Consumiendo variables del tema global[cite: 1] */
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hud-panel-superior {
+  border-bottom: 1px solid var(--border-glass);
+}
+
+.hud-panel-inferior {
+  border-top: 1px solid var(--border-glass);
+  justify-content: center;
+}
+
+.etiqueta-sistema {
+  color: var(--guinda-main);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.titulo-roboto {
+  color: var(--text-primary);
+  margin: 4px 0 0 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.texto-roboto {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+/* Botón de cierre dinámico */
+.boton-cerrar-hud {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  border-radius: 36px;
+  width: 48px;
+  height: 48px;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: var(--guinda-main);
+    color: #ffffff; /* El texto se vuelve blanco al hacer hover sobre el fondo guinda */
+    box-shadow: var(--shadow-premium);
+    border-color: var(--guinda-main);
+  }
+}
+
+/* === RETÍCULA CENTRAL DE ESCANEO (HUD TARGET) === */
+.hud-reticula-central {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  height: 280px;
+  z-index: 5;
+  pointer-events: none;
+
+  .esquina {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    /* La retícula respeta el color institucional[cite: 1] */
+    border-color: var(--guinda-main);
+    border-style: solid;
+    transition: all 0.3s ease;
+  }
+
+  .superior-izquierda { top: 0; left: 0; border-width: 3px 0 0 3px; border-top-left-radius: 12px; }
+  .superior-derecha { top: 0; right: 0; border-width: 3px 3px 0 0; border-top-right-radius: 12px; }
+  .inferior-izquierda { bottom: 0; left: 0; border-width: 0 0 3px 3px; border-bottom-left-radius: 12px; }
+  .inferior-derecha { bottom: 0; right: 0; border-width: 0 3px 3px 0; border-bottom-right-radius: 12px; }
+
+  /* Animación del láser */
+  .laser-barrido {
+    position: absolute;
+    top: 0;
+    left: 5%;
+    width: 90%;
+    height: 2px;
+    background: var(--guinda-main);
+    box-shadow: 0 0 15px var(--guinda-main);
+    animation: escanear 2s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes escanear {
+  0% { top: 5%; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { top: 95%; opacity: 0; }
+}
+
+/* === MOTOR 3D EN EL FONDO === */
+.contenedor-ar-fondo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+/* === ESTADOS INFERIORES === */
+.estado-conexion {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pulso-guinda {
+  width: 8px;
+  height: 8px;
+  background-color: var(--guinda-main);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--guinda-main);
+  animation: titilar 1s infinite;
+}
+
+@keyframes titilar {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}

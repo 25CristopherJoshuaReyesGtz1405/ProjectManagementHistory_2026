@@ -1,0 +1,271 @@
+:host {
+  /* Paleta "Vizcaya Premium" adaptada al ITD */
+  --guinda-velvet: #3b070f; 
+  --guinda-surface: #6b1422;
+  --brass-gold: #C5A059;
+  --brass-glow: rgba(197, 160, 89, 0.35);
+  
+  --text-white: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.65);
+  --hover-bg: rgba(255, 255, 255, 0.06);
+
+  /* Dimensiones y Animaciones */
+  --sidebar-width: 290px;
+  --sidebar-collapsed-width: 88px;
+  --transition-mech: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  --transition-premium: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sidebar.premium-sidebar {
+  width: var(--sidebar-width);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(165deg, var(--guinda-velvet) 0%, var(--guinda-surface) 100%);
+  color: var(--text-white);
+  transition: width var(--transition-mech);
+  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(197, 160, 89, 0.15); /* Filo dorado sutil */
+  z-index: 100;
+  position: relative;
+  overflow: visible; /* Necesario para que el botón flotante se vea */
+
+  /* =======================================================
+     NUEVA CONFIGURACIÓN PARA CELULARES <768px (SLIDE-IN)
+     ======================================================= */
+  @media (max-width: 768px) {
+    position: fixed; top: 0; left: 0;
+    z-index: 1000; /* Por encima de todo */
+    box-shadow: 10px 0 50px rgba(0,0,0,0.8);
+    
+    /* 🔥 ESTADO INICIAL: OCULTO A LA IZQUIERDA 🔥 */
+    transform: translateX(-100%);
+    transition: transform var(--transition-premium) ease;
+    
+    /* 🔥 ESTADO ACTIVO: SE DESLIZA HACIA ADENTRO 🔥 */
+    &.mobile-active { transform: translateX(0); }
+    
+    /* En celular siempre mostramos el texto (no hay modo colapsado) */
+    width: var(--sidebar-width) !important;
+  }
+
+  /* --- ESTADO COLAPSADO --- */
+  &.colapsado {
+    width: var(--sidebar-collapsed-width);
+    
+    .sidebar-header { padding: 2rem 0.5rem 1.5rem; @media (max-width: 768px) {
+    padding: 1.5rem 1rem 1rem; // Menos padding en celular
+    justify-content: center; // Centramos todo
+    
+    .logo-bezel {
+      width: 50px; height: 50px; // Logo más pequeño en celular (corrige image_2cdc25.png)
+    }
+  }}
+    .logo-container { width: 48px; height: 48px; margin: 0 auto; padding: 2px; }
+    .nav-menu { padding: 2rem 0.5rem; }
+    .nav-item { padding: 0.85rem; justify-content: center; }
+    .active-indicator { left: -6px; }
+    .sidebar-footer { padding: 1.5rem 0.5rem; }
+  }
+}
+
+/* Ocultar elementos suavemente */
+.hidden {
+  opacity: 0 !important;
+  white-space: nowrap;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+/* --- ENCABEZADO Y LOGO --- */
+.sidebar-header {
+  padding: 2.5rem 1.5rem 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: padding var(--transition-mech) ease;
+  box-shadow: inset 0 -10px 20px rgba(0,0,0,0.1);
+
+  .header-text {
+    transition: opacity 0.3s ease;
+    opacity: 1;
+    .school-name {
+      font-size: 1.25rem; font-weight: 800; letter-spacing: 0.5px;
+      margin: 0 0 2px 0; white-space: nowrap; color: var(--text-white);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
+    .school-subtitle {
+      font-size: 0.75rem; color: var(--brass-gold); text-transform: uppercase;
+      letter-spacing: 1.5px; font-weight: 700; white-space: nowrap;
+      display: inline-block; margin-top: 10px;
+    }
+  }
+
+  .logo-container {
+    width: 90px; height: 90px; margin: 1.2rem;
+    border-radius: 50%; /* Bisel circular */
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(197, 160, 89, 0.3);
+    padding: 10px; cursor: pointer;
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.05), 0 5px 15px rgba(0,0,0,0.4);
+    transition: all var(--transition-mech);
+
+    &:hover { transform: scale(1.05); border-color: var(--brass-gold); }
+
+    .logo { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+  }
+}
+
+/* --- MENÚ DE NAVEGACIÓN --- */
+.nav-menu {
+  flex-grow: 1; padding: 2rem 1.2rem; overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column; gap: 0.5rem;
+
+  .menu-label {
+    font-size: 0.65rem; color: var(--brass-gold); font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 10px 10px;
+    opacity: 0.8; transition: opacity 0.3s ease;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 0.9rem 1rem; border-radius: 12px;
+    text-decoration: none; color: var(--text-muted);
+    font-weight: 500; font-size: 0.9rem; position: relative;
+    transition: all 0.3s ease; white-space: nowrap;
+
+    .active-indicator {
+      position: absolute; left: 0; top: 50%; transform: translateY(-50%);
+      width: 4px; height: 0; background: var(--brass-gold);
+      border-radius: 0 4px 4px 0; transition: height 0.3s var(--transition-mech);
+    }
+
+    .icon-box {
+      width: 32px; height: 32px; display: grid; place-items: center;
+      i { font-size: 1.2rem; transition: transform 0.3s ease, color 0.3s ease; }
+    }
+
+    /* Animación Hover */
+    &:hover:not(.active) {
+      background: var(--hover-bg); color: var(--text-white);
+      .icon-box i { transform: scale(1.1); color: var(--brass-gold); }
+      .link-text { transform: translateX(4px); }
+    }
+
+    /* ESTADO ACTIVO (Premium Brass Glow) */
+    &.active {
+      background: linear-gradient(90deg, rgba(197, 160, 89, 0.15) 0%, transparent 100%);
+      color: var(--text-white); font-weight: 700;
+      border-top: 1px solid rgba(197, 160, 89, 0.05);
+      border-bottom: 1px solid rgba(197, 160, 89, 0.05);
+
+      .active-indicator { height: 65%; box-shadow: 2px 0 10px var(--brass-glow); }
+      .icon-box i { color: var(--brass-gold); text-shadow: 0 0 10px rgba(197, 160, 89, 0.4); }
+    }
+  }
+}
+
+/* --- FOOTER --- */
+.sidebar-footer {
+  padding: 1.5rem 1.2rem;
+  border-top: 1px solid rgba(197, 160, 89, 0.2);
+
+  .footer-card {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px; padding: 1rem; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2);
+
+    .shield-icon { font-size: 1.6rem; color: var(--brass-gold); opacity: 0.8; }
+    
+    .slogan {
+      margin: 0; color: var(--text-muted); font-size: 0.75rem;
+      font-style: italic; font-weight: 500; letter-spacing: 0.5px;
+    }
+
+    &.icon-only { padding: 1rem 0; .shield-icon { margin: 0; font-size: 1.4rem; opacity: 1; } }
+  }
+}
+
+/* --- BOTÓN COLAPSADOR FLOTANTE (Multi-Bezel) --- */
+.toggle-btn-premium {
+  position: absolute; right: -16px; top: 45px;
+  width: 32px; height: 32px; border-radius: 50%;
+  
+  /* Se camufla el borde con el fondo del dashboard para parecer incrustado */
+  background: linear-gradient(135deg, #dfc17a, #a88325); /* Latón pulido */
+  border: 4px solid var(--bg-app, #f4f7f9); /* Usa la variable de tu tema general */
+  color: #3b070f;
+  
+  display: grid; place-items: center; cursor: pointer; outline: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease, border-color 0.4s ease;
+  z-index: 101;
+
+  &.desktop-only {
+    @media (max-width: 768px) { display: none !important; }
+  }
+  
+  i { font-size: 1rem; font-weight: 900; }
+
+  &:hover { transform: scale(1.15); box-shadow: 0 5px 15px var(--brass-glow); }
+}
+
+/* --- SCROLLBAR ELEGANT --- */
+.custom-scroll {
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.3); border-radius: 10px; }
+  &::-webkit-scrollbar-thumb:hover { background: rgba(197, 160, 89, 0.6); }
+}
+
+/* ==========================================================================
+   ADAPTACIÓN AL MODO OSCURO (DARK THEME)
+   ========================================================================== */
+:host-context(.dark-theme) .sidebar.premium-sidebar {
+  /* Cambiamos el fondo a un Guinda casi negro (Obsidiana) */
+  background: linear-gradient(165deg, #0a0203 0%, #2b060d 100%);
+  border-right: 1px solid rgba(197, 160, 89, 0.08);
+  box-shadow: 4px 0 25px rgba(0, 0, 0, 0.8);
+}
+
+:host-context(.dark-theme) .sidebar-header {
+  border-bottom: 1px solid rgba(197, 160, 89, 0.1);
+  box-shadow: inset 0 -10px 20px rgba(0,0,0,0.4);
+  
+  .logo-container {
+    background: rgba(0, 0, 0, 0.6);
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.02), 0 5px 15px rgba(0,0,0,0.8);
+  }
+}
+
+:host-context(.dark-theme) .nav-menu {
+  /* Al oscurecer el fondo, hacemos el texto normal un poco más oscuro para que el blanco puro resalte más al pasar el mouse */
+  .nav-item {
+    color: rgba(255, 255, 255, 0.45);
+    
+    &:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.03); 
+      color: rgba(255, 255, 255, 0.85);
+    }
+    
+    &.active {
+      background: linear-gradient(90deg, rgba(197, 160, 89, 0.08) 0%, transparent 100%);
+      color: #ffffff;
+    }
+  }
+}
+
+:host-context(.dark-theme) .sidebar-footer {
+  .footer-card {
+    background: rgba(0, 0, 0, 0.5);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+  }
+}

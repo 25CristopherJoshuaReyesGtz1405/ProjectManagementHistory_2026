@@ -1,0 +1,57 @@
+<!-- ModulosAvanzados/ExploradorPhygital/ExploradorPhygital.component.html -->
+
+<!-- Capa 0: El Contenedor Maestro Inmersivo -->
+<div class="hud-visor-overlay" *ngIf="escaneoActivo">
+  
+  <!-- Capa 1: Panel de Control Superior (Glassmorphism) -->
+  <header class="hud-panel-superior">
+    <div class="info-topografica">
+      <span class="etiqueta-sistema">SISTEMA ÓPTICO ACTIVO</span>
+      <h2 class="titulo-roboto">Búsqueda: Caja Física #{{ idCajaAsignada }}</h2>
+    </div>
+    <button class="boton-cerrar-hud" (click)="cerrarVisor()">
+      <!-- Ícono de cruz (X) en SVG -->
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"></path>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Capa 2: Retícula de Escaneo (El "Target" Visual) -->
+  <div class="hud-reticula-central">
+    <div class="esquina superior-izquierda"></div>
+    <div class="esquina superior-derecha"></div>
+    <div class="esquina inferior-izquierda"></div>
+    <div class="esquina inferior-derecha"></div>
+    <!-- Láser de barrido animado -->
+    <div class="laser-barrido"></div>
+  </div>
+
+  <!-- Capa 3: Estado Inferior -->
+  <footer class="hud-panel-inferior">
+    <div class="estado-conexion">
+      <div class="pulso-guinda"></div>
+      <span class="texto-roboto">Sincronizado con Base de Datos Central</span>
+    </div>
+  </footer>
+
+  <!-- Capa 4: Motor 3D (Fondo) -->
+  <div class="contenedor-ar-fondo">
+    <a-scene #escenaAR embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix; matrixCodeType: 3x3; debugUIEnabled: false;">
+      <a-marker type="barcode" [attr.value]="idCajaAsignada">
+        
+        <!-- Panel Holográfico Ajustado -->
+        <a-plane position="0 1.5 0" rotation="-90 0 0" width="3.2" height="1.6" material="color: #0A0A0A; opacity: 0.9; transparent: true;">
+          <!-- Marco interior holográfico -->
+          <a-plane position="0 0 0.05" width="3.2" height="1.6" material="color: #68123E; opacity: 1; transparent: true;" wireframe="true" wireframe-linewidth="3"></a-plane>
+          
+          <a-text [attr.value]="'EXPEDIENTE: ' + expedienteObjetivo.numControl" position="-1.4 0.4 0.1" width="5" color="#FFFFFF" font="roboto"></a-text>
+          <a-text [attr.value]="'ESTADO: ' + expedienteObjetivo.ubicacion.estadoConservacion" position="-1.4 -0.1 0.1" width="3" color="#A0A0A0" font="roboto"></a-text>
+          <a-text value="OBJETIVO CONFIRMADO" position="0 -0.5 0.1" align="center" width="4" color="#68123E" font="roboto"></a-text>
+        </a-plane>
+
+      </a-marker>
+      <a-entity camera></a-entity>
+    </a-scene>
+  </div>
+</div>

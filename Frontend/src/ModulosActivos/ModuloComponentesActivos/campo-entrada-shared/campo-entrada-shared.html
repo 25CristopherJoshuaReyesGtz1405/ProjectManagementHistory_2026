@@ -1,0 +1,12 @@
+<div class="input-wrapper">
+  <i class="icon" [ngClass]="iconClass" *ngIf="iconClass"></i>
+  <input
+    [type]="type"
+    class="form-input"
+    [placeholder]="label"
+    [(ngModel)]="value"
+    (ngModelChange)="onChange(value)"
+    (blur)="onTouched()"
+    [disabled]="isDisabled"
+  />
+</div>

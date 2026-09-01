@@ -1,0 +1,216 @@
+<div class="dashboard-page custom-scroll" *ngIf="usuario$ | async as perfil">
+  <header class="page-header animate-slide-in-left">
+    <div class="header-content">
+      <span class="badge-date"
+        ><i class="bi bi-calendar3"></i> {{ today | date: "EEEE, dd 'de' MMMM" }}</span
+      >
+      <h1 class="titulo-principal">
+        ¡{{ saludoDelDia }}, {{ perfil.usuarioActual.nombreCompleto }}!
+      </h1>
+      <p class="subtitle">Centro de Mando Operativo - Archivo Histórico ITD</p>
+
+      <div class="executive-briefing mt-3">
+        <div class="briefing-icon pulse-glow"><i class="bi bi-archive-fill"></i></div>
+        <p>
+          <strong>Resumen del Sistema:</strong> El acervo opera con normalidad. Tienes
+          <span class="text-danger font-bold">3 préstamos</span> vencidos por recuperar y el nivel
+          general de digitalización se encuentra al <span class="font-bold">62%</span>.
+        </p>
+      </div>
+    </div>
+  </header>
+
+  <section class="kpi-grid mt-4">
+    <section class="kpi-grid mt-4">
+      <app-tarjeta-stadistic
+        titulo="Acervo Total"
+        valor="60,245"
+        tendenciaTexto="+120 este mes"
+        icono="bi-folder2-open"
+        claseFondoIcono="bg-guinda-light"
+        claseColorIcono="text-guinda"
+        iconoMarcaAgua="bi-archive"
+        delayAnimacion="delay-100"
+      >
+      </app-tarjeta-stadistic>
+
+      <app-tarjeta-stadistic
+        titulo="Digitalizados"
+        valor="37,351"
+        tendenciaTexto="62% de avance"
+        icono="bi-cloud-check"
+        claseFondoIcono="bg-blue-light"
+        claseColorIcono="text-blue"
+        iconoMarcaAgua="bi-file-earmark-pdf"
+        delayAnimacion="delay-200"
+      >
+      </app-tarjeta-stadistic>
+
+      <app-tarjeta-stadistic
+        titulo="Préstamos Activos"
+        valor="42"
+        tendenciaTexto="3 vencidos"
+        iconoTendencia="bi-exclamation-circle"
+        
+        iconoPrincipal="bi-journal-arrow-up"
+        claseFondoIcono="bg-gold-light"
+        claseColorIcono="text-warning"
+        iconoMarcaAgua="bi-person-bounding-box"
+        delayAnimacion="delay-300"
+      >
+      </app-tarjeta-stadistic>
+
+      <app-tarjeta-stadistic
+        titulo="Fondo Histórico"
+        valor="15,800"
+        tendenciaTexto="Inalterables (>5 años)"
+        footerIcono="bi-dash"
+        
+        iconoPrincipal="bi-shield-lock"
+        claseFondoIcono="bg-purple-light"
+        claseColorIcono="text-purple"
+        iconoMarcaAgua="bi-bank"
+        delayAnimacion="delay-400"
+      >
+      </app-tarjeta-stadistic>
+    </section>
+  </section>
+
+  <div class="main-layout mt-4">
+    <div class="col-primary">
+      <article class="widget-card cycle-health-card animate-slide-up delay-400">
+        <div class="widget-body p-4 flex-row-between">
+          <div class="health-info">
+            <h3>Salud del Acervo Institucional</h3>
+            <p>
+              <i class="bi bi-shield-check text-success"></i> El resguardo físico y digital opera en
+              niveles óptimos.
+            </p>
+          </div>
+          <div class="progress-section">
+            <div class="progress-labels">
+              <span>Avance de Digitalización</span><strong>62%</strong>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-fill bg-guinda" style="width: 62%"></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="widget-card animate-slide-up delay-500">
+        <div class="widget-header-premium">
+          <div class="title-group">
+            <h3>Radar de Préstamos</h3>
+            <p>Expedientes fuera del archivo</p>
+          </div>
+          <button class="btn-icon-soft" title="Ver todos">
+            <i class="bi bi-arrows-angle-expand"></i>
+          </button>
+        </div>
+        <div class="widget-body p-0">
+          <div class="table-container custom-scroll">
+            <table class="itd-flat-table">
+              <thead>
+                <tr>
+                  <th>Matrícula</th>
+                  <th>Alumno</th>
+                  <th>Fecha Salida</th>
+                  <th>Estatus</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>22040000</strong></td>
+                  <td>García Pérez, Luis A.</td>
+                  <td>12/Abr/2026</td>
+                  <td><span class="badge red">VENCIDO</span></td>
+                </tr>
+                <tr>
+                  <td><strong>19040001</strong></td>
+                  <td>Luna Ramírez, Carmen R.</td>
+                  <td>20/Abr/2026</td>
+                  <td><span class="badge green">EN TIEMPO</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <aside class="col-secondary">
+      <div class="widget-card control-center-card animate-slide-up delay-400">
+        <div class="widget-header-premium">
+          <div class="title-group">
+            <h3>Control Center</h3>
+            <p>Gestión rápida</p>
+          </div>
+        </div>
+        <div class="widget-body p-4">
+          <div class="ios-grid">
+            <button class="ios-btn bg-guinda-light" (click)="abrirModalNuevo()">
+              <i class="bi bi-folder-plus text-guinda"></i><span>Nuevo<br />Exped.</span>
+            </button>
+            <button class="ios-btn bg-blue-light" (click)="abrirModalBuscador()">
+              <i class="bi bi-search text-blue"></i><span>Buscar<br />Alumno</span>
+            </button>
+            <button class="ios-btn bg-gold-light">
+              <i class="bi bi-journal-arrow-up text-warning"></i><span>Prestar<br />Físico</span>
+            </button>
+            <button class="ios-btn bg-green-light">
+              <i class="bi bi-journal-check text-success"></i><span>Recibir<br />Físico</span>
+            </button>
+            <button class="ios-btn bg-purple-light">
+              <i class="bi bi-cloud-arrow-up text-purple"></i><span>Carga<br />Masiva</span>
+            </button>
+            <button class="ios-btn bg-gray-light">
+              <i class="bi bi-file-earmark-pdf text-dark"></i><span>Exportar<br />Datos</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-card alert-card animate-slide-up delay-600">
+        <div class="widget-header-simple warning-bg">
+          <i class="bi bi-shield-exclamation text-danger pulse-glow"></i>
+          <h3>Atención Requerida</h3>
+        </div>
+        <div class="widget-body p-0">
+          <ul class="alert-list">
+            <li>
+              <div class="alert-content">
+                <span class="alert-title">Préstamos Vencidos</span>
+                <span class="alert-desc">Recuperar 3 expedientes físicos.</span>
+              </div>
+              <span class="badge red">3</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Modal de Nuevo Expediente (Ya lo tienes) -->
+<app-modal-nuevo-expediente 
+  *ngIf="isModalNuevoOpen" 
+  (close)="cerrarModalNuevo()" 
+  (save)="procesarNuevoExpediente($event)">
+</app-modal-nuevo-expediente>
+
+<!-- 2. INYECTAMOS EL NUEVO MODAL BUSCADOR -->
+<app-modal-busqueda-expediente
+  *ngIf="isModalBuscadorOpen"
+  (close)="cerrarModalBuscador()">
+</app-modal-busqueda-expediente>
+
+<!-- ============================================== -->
+<!-- MODAL HIJO: PUNTO DE CONTROL DE PRÉSTAMOS      -->
+<!-- ============================================== -->
+<app-modal-prestar-fisico 
+  *ngIf="mostrarModalPrestamo" 
+  [expedienteSeleccionado]="expedienteSeleccionado" 
+  (close)="cerrarModalPrestamo()" 
+  (prestamoExitoso)="manejarPrestamoExitoso($event)">
+</app-modal-prestar-fisico>

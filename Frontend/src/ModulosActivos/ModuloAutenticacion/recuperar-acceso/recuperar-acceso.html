@@ -1,0 +1,88 @@
+<div class="login-page">
+  <div class="background-slider">
+    <div class="slide slide-1"></div>
+    <div class="slide slide-2"></div>
+    <div class="slide slide-3"></div>
+    <div class="slide slide-4"></div>
+    <div class="slide slide-5"></div>
+    <div class="slide slide-6"></div>
+    <div class="slide slide-7"></div>
+    <div class="slide slide-8"></div>
+  </div>
+
+  <div class="slider-overlay"></div>
+
+  <div class="login-card">
+    <div class="login-header">
+      <h3 class="titulo-principal">Recuperar Acceso</h3>
+<br>
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg/3840px-Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg.png"
+        alt="Logo ITD"
+        class="logo"
+      />
+      <p class="subtitulo" *ngIf="!correoEnviado">Ingresa tu correo institucional</p>
+    </div>
+
+    <form *ngIf="!correoEnviado" [formGroup]="recuperarForm" (ngSubmit)="solicitarRecuperacion()">
+      <p class="instrucciones">
+        Te enviaremos un enlace seguro para que puedas restablecer tu clave de acceso al SIGAH.
+      </p>
+
+      <div class="form-group">
+        <label class="label-text">Correo o Matrícula</label>
+        <app-campo-entrada-shared
+          label="usuario@itdurango.edu.mx"
+          type="email"
+          iconClass="bi bi-envelope-fill"
+          formControlName="correo"
+        >
+        </app-campo-entrada-shared>
+
+        <div *ngIf="f['correo'].invalid && f['correo'].touched" class="error-container fade-in">
+          <span *ngIf="f['correo'].errors?.['required']"
+            ><i class="bi bi-exclamation-circle-fill"></i> El correo es obligatorio.</span
+          >
+          <span *ngIf="f['correo'].errors?.['email']"
+            ><i class="bi bi-exclamation-circle-fill"></i> Formato de correo no válido.</span
+          >
+        </div>
+      </div>
+
+      <div class="form-actions center-actions">
+        <a routerLink="/login" class="back-link"
+          ><i class="bi bi-arrow-left"></i> Volver al inicio de sesión</a
+        >
+      </div>
+
+      <app-btn-shared
+        [text]="estaCargando ? 'Enviando enlace...' : 'Enviar Solicitud'"
+        [iconClass]="estaCargando ? 'bi bi-hourglass-split spin-icon' : 'bi bi-send-fill'"
+        [disabled]="estaCargando"
+        variant="solid"
+      >
+      </app-btn-shared>
+    </form>
+
+    <div *ngIf="correoEnviado" class="success-state fade-in">
+      <div class="success-icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h4>¡Enlace Enviado!</h4>
+      <p>
+        Revisa tu bandeja de entrada (y la carpeta de spam). Hemos enviado las instrucciones para
+        restablecer tu contraseña.
+      </p>
+
+      <div style="margin-top: 1rem">
+        <app-btn-shared
+          text="Regresar al inicio"
+          iconClass="bi bi-house-door-fill"
+          variant="outline"
+          (click)="router.navigate(['/login'])"
+        >
+        </app-btn-shared>
+      </div>
+    </div>
+  </div>
+</div>

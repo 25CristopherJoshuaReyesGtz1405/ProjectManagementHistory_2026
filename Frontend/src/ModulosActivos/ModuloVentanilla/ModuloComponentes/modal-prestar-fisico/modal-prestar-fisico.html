@@ -1,0 +1,102 @@
+<div class="modal-backdrop fade-in" (click)="cerrarModal()">
+  <div class="premium-glass-modal prestamo-modal animate-slide-up" (click)="$event.stopPropagation()">
+    
+    <header class="modal-header header-warning">
+      <div class="header-content">
+        <span class="badge-tag pulse-tag"><i class="bi bi-box-arrow-right me-1"></i> Checkpoint de Custodia</span>
+        <div class="header-titles">
+          <h2>Autorización de Salida</h2>
+          <p>Se registrará la extracción del acervo histórico bajo su responsabilidad.</p>
+        </div>
+      </div>
+      <button class="btn-close-white" (click)="cerrarModal()" [disabled]="procesando">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </header>
+
+    <div class="modal-body custom-scroll">
+      
+      <!-- ========================================================= -->
+      <!-- ESTADO 1: BUSCADOR DE EXPEDIENTES (Modo Global)           -->
+      <!-- ========================================================= -->
+      <ng-container *ngIf="!expedienteSeleccionado">
+        <div class="form-row">
+          <div class="input-group full-width">
+            <label>Localizar Carpeta por Matrícula</label>
+            <div class="search-wrapper">
+              <i class="bi bi-search search-icon" *ngIf="!buscandoExpediente"></i>
+              <i class="bi bi-arrow-repeat spin-icon search-icon text-guinda" *ngIf="buscandoExpediente"></i>
+              <input type="text" class="glass-input with-icon" 
+                     placeholder="Teclee la matrícula del expediente..."
+                     (keyup)="alEscribirMatricula($event)" autocomplete="off">
+            </div>
+            
+            <!-- Resultados de Búsqueda -->
+            <div class="autocomplete-dropdown custom-scroll mt-2" *ngIf="resultadosExpedientes.length > 0">
+              <div class="dropdown-item" *ngFor="let exp of resultadosExpedientes" (click)="seleccionarExpediente(exp)">
+                <div class="item-avatar bg-guinda-light"><i class="bi bi-folder text-guinda"></i></div>
+                <div class="item-info">
+                  <span class="name">Matrícula: {{ exp.numControl }}</span>
+                  <span class="depto" [ngStyle]="{'color': exp.estatus === 'TRANSITO' ? '#ef4444' : '#10b981'}">
+                    Estatus: {{ exp.estatus }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- ========================================================= -->
+      <!-- ESTADO 2: FORMULARIO DE AUTORIZACIÓN Y CONTEXTO           -->
+      <!-- ========================================================= -->
+      <ng-container *ngIf="expedienteSeleccionado">
+        
+        <!-- Tarjeta de Contexto -->
+        <div class="context-card mb-4">
+          <div class="folder-icon"><i class="bi bi-folder-symlink-fill"></i></div>
+          <div class="folder-details">
+            <span class="label">Expediente Preparado para Extracción</span>
+            <span class="value">Matrícula: {{ expedienteSeleccionado.numControl }}</span>
+            <span class="sub-value">Ubicación Fija: <strong>{{ expedienteSeleccionado.ubicacion.caja }} / {{ expedienteSeleccionado.ubicacion.carpeta }}</strong></span>
+          </div>
+          <!-- Botón para volver a buscar si entraron en Modo Global -->
+          <button class="btn-icon-only text-muted" (click)="cambiarExpediente()" title="Cambiar expediente">
+            <i class="bi bi-arrow-repeat"></i>
+          </button>
+        </div>
+
+        <form [formGroup]="prestamoForm" class="prestamo-form">
+          <!-- Identidad Automática por Token -->
+          <div class="form-row">
+            <div class="input-group full-width">
+              <label>Custodia Asignada Automáticamente a (Token):</label>
+              <div class="readonly-badge" *ngIf="operadorActual">
+                <i class="bi bi-person-badge-fill me-2 text-guinda"></i>
+                <strong>{{ operadorActual.usuarioActual.nombreCompleto }}</strong>
+                <span class="badge-role">{{ operadorActual.rol }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Único campo requerido -->
+          <div class="form-row mt-3">
+            <div class="input-group full-width">
+              <label>Motivo y Justificación de Salida *</label>
+              <textarea formControlName="observaciones" class="glass-input textarea-custom" placeholder="Especifique la razón oficial para retirar el documento..."></textarea>
+            </div>
+          </div>
+        </form>
+      </ng-container>
+
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-ghost" (click)="cerrarModal()" [disabled]="procesando">Cancelar</button>
+      <button class="btn-guinda shadow-btn" *ngIf="expedienteSeleccionado" (click)="autorizarSalida()" [disabled]="procesando">
+        <i class="bi bi-unlock-fill me-2"></i> Confirmar Extracción
+      </button>
+    </div>
+
+  </div>
+</div>

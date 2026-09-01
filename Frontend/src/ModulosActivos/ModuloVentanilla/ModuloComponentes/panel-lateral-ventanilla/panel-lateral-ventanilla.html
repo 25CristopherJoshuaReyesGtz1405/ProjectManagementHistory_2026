@@ -1,0 +1,66 @@
+<nav class="sidebar premium-sidebar" [class.colapsado]="estaColapsado" [class.mobile-active]="isMobileOpen">
+  
+  <div class="sidebar-header">
+    <div class="header-text" [class.hidden]="estaColapsado">
+      <h2 class="school-name">Instituto Tecnológico</h2>
+      <h2 class="school-name">Durango</h2>
+    </div>
+    <div class="logo-container" routerLink="/ventanilla/dashboard" title="Ir al Inicio">
+      <img
+        src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg/3840px-Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg.png"
+        alt="Escudo ITD"
+        class="logo"
+      />
+    </div>
+    <div class="header-text" [class.hidden]="estaColapsado">
+      <span class="school-subtitle">Ventanilla de Atención</span>
+    </div>
+  </div>
+
+  <div class="nav-menu custom-scroll">
+    <span class="menu-label" [class.hidden]="estaColapsado">Menú Operativo</span>
+
+    <a routerLink="/ventanilla/dashboard" routerLinkActive="active" class="nav-item" [title]="estaColapsado ? 'Tablero Principal' : ''">
+      <div class="active-indicator"></div>
+      <div class="icon-box"><i class="bi bi-grid-fill"></i></div>
+      <span class="link-text" [class.hidden]="estaColapsado">Inicio</span>
+    </a>
+
+    <a routerLink="/ventanilla/busqueda" routerLinkActive="active" class="nav-item" [title]="estaColapsado ? 'Búsqueda Rápida' : ''">
+      <div class="active-indicator"></div>
+      <div class="icon-box"><i class="bi bi-search"></i></div>
+      <span class="link-text" [class.hidden]="estaColapsado">Búsqueda de Expediente</span>
+    </a>
+
+    <a routerLink="/ventanilla/prestamos" routerLinkActive="active" class="nav-item" [title]="estaColapsado ? 'Préstamos y Retornos' : ''">
+      <div class="active-indicator"></div>
+      <div class="icon-box"><i class="bi bi-arrow-left-right"></i></div>
+      <span class="link-text" [class.hidden]="estaColapsado">Préstamos Activos</span>
+    </a>
+
+    <a routerLink="/ventanilla/digitalizacion" routerLinkActive="active" class="nav-item" [title]="estaColapsado ? 'Escanear Documentos' : ''">
+      <div class="active-indicator"></div>
+      <div class="icon-box"><i class="bi bi-upc-scan"></i></div>
+      <span class="link-text" [class.hidden]="estaColapsado">Digitalización</span>
+    </a>
+
+    <a routerLink="/ventanilla/soporte" routerLinkActive="active" class="nav-item" [title]="estaColapsado ? 'Soporte Técnico' : ''">
+      <div class="active-indicator"></div>
+      <div class="icon-box"><i class="bi bi-headset"></i></div>
+      <span class="link-text" [class.hidden]="estaColapsado">Soporte Técnico</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="footer-card" [class.icon-only]="estaColapsado">
+      <i class="bi bi-shield-shaded shield-icon" [title]="estaColapsado ? 'ITD' : ''"></i>
+      <div class="footer-text" [class.hidden]="estaColapsado">
+        <p class="slogan">La Técnica Al Servicio<br />De La Patria.</p>
+      </div>
+    </div>
+  </div>
+
+  <button class="toggle-btn-premium" (click)="alternarSidebar()" [title]="estaColapsado ? 'Expandir menú' : 'Colapsar menú'">
+    <i class="bi" [ngClass]="estaColapsado ? 'bi-chevron-right' : 'bi-chevron-left'"></i>
+  </button>
+</nav>

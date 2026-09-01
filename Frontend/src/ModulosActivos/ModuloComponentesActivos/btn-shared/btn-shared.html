@@ -1,0 +1,8 @@
+<button 
+  class="btn-custom" 
+  [ngClass]="variant" 
+  (click)="onButtonClick()"
+  [disabled]="disabled">
+  <i [ngClass]="iconClass" *ngIf="iconClass"></i>
+  <span>{{ text }}</span>
+</button>

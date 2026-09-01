@@ -1,0 +1,36 @@
+/* ==========================================================================
+   ESTRUCTURA MAESTRA - CORRECCIÓN RESPONSIVA
+   ========================================================================== */
+:host {
+  --transition-premium: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.layout-wrapper {
+  display: flex; height: 100vh; width: 100vw;
+  background-color: var(--bg-app); overflow: hidden;
+  transition: background-color 0.4s ease;
+
+  /* Bloquear scroll del body si el menú móvil está abierto */
+  &.mobile-menu-active { overflow: hidden; }
+}
+
+/* Capa oscura de fondo para celulares */
+.sidebar-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+  z-index: 99; animation: fadeIn 0.3s ease;
+}
+
+.main-content-wrapper {
+  flex-grow: 1; display: flex; flex-direction: column;
+  height: 100vh; min-width: 0; transition: transform var(--transition-premium);
+}
+
+.page-content {
+  flex-grow: 1; overflow-y: auto; overflow-x: hidden; padding: 2rem;
+  
+  /* Corrige padding excesivo en celulares */
+  @media (max-width: 768px) { padding: 1.2rem; }
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }

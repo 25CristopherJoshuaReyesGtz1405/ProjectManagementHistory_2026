@@ -1,0 +1,99 @@
+<!-- 1. CAPA DE TOASTS (Notificaciones Flotantes) -->
+<!-- Se muestran arriba a la derecha -->
+<div class="contenedor-toasts">
+  @for (toast of lista(); track toast.id) {
+    <div 
+      class="toast-card" 
+      [ngClass]="[toast.tipo, toast.cerrando ? 'salida' : 'entrada']"
+      (click)="servicio.cerrar(toast.id)">
+      
+      <div class="icono">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg/3840px-Logo_de_la_Instituto_Tecnol%C3%B3gico_de_Durango.svg.png" 
+          alt="Logo ITD"
+          class="logo-colegio"
+        />
+      </div>
+
+      <div class="contenido">
+        <div class="titulo">{{ toast.titulo }}</div>
+        <div class="mensaje">{{ toast.mensaje }}</div>
+      </div>
+
+      <div class="icono">
+        <i class="bi" 
+           [class.bi-check-circle-fill]="toast.tipo === 'exito'"
+           [class.bi-x-octagon-fill]="toast.tipo === 'error'"
+           [class.bi-info-circle-fill]="toast.tipo === 'info'">
+        </i>
+      </div>
+
+      <button class="btn-cerrar">&times;</button>
+    </div>
+  }
+</div>
+
+<!-- 2. CAPA DE MODAL DE CONFIRMACIÓN (Ventana Emergente) -->
+<!-- Solo se muestra si 'modalState$' tiene datos (no es null) -->
+@if (modalState$ | async; as modal) {
+  
+  <!-- Fondo oscuro que cubre toda la pantalla -->
+  <div class="modal-backdrop" (click)="onCancel()">
+    
+    <!-- La tarjeta del modal (Detenemos el click para no cerrar al tocar la tarjeta) -->
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      
+      <!-- Cuerpo: Icono y Texto -->
+      <div class="modal-body">
+        <div class="icon-wrapper warning">
+          <i class="bi bi-question-lg"></i>
+        </div>
+        
+        <div class="texto-wrapper">
+          <h2 class="titulo">{{ modal.titulo }}</h2>
+          <p class="mensaje">{{ modal.mensaje }}</p>
+        </div>
+      </div>
+
+      <!-- Footer: Botones -->
+      <div class="modal-footer">
+        <!-- Botón Secundario (Cancelar) -->
+        <button class="btn btn-secundario" (click)="onCancel()">
+          Cancelar
+        </button>
+
+        <!-- Botón Principal (Confirmar) -->
+        <!-- El texto viene del servicio (ej. 'Sí, eliminar') -->
+        <button class="btn btn-primary" (click)="onConfirm(modal)">
+          {{ modal.textoBotonConfirmar }}
+        </button>
+      </div>
+      
+    </div>
+  </div>
+}
+
+<!-- 3. CAPA DE MODAL DE CARGA (Procesamiento Forense) -->
+<!-- Bloquea la interfaz mientras el OCR o la BD trabajan -->
+@if (loadingState$ | async; as loading) {
+  <!-- intercept-clicks evita que el usuario cierre el modal haciendo clic fuera -->
+  <div class="modal-backdrop intercept-clicks">
+    
+    <div class="modal-content loading-style" (click)="$event.stopPropagation()">
+      <div class="modal-body">
+        
+        <!-- Animación del Escáner Óptico Premium -->
+        <div class="optical-scanner">
+          <i class="bi bi-upc-scan scanner-icon"></i>
+          <div class="scanner-laser"></div>
+        </div>
+        
+        <div class="texto-wrapper" style="margin-top: 1.5rem;">
+          <h2 class="titulo">{{ loading.titulo }}</h2>
+          <p class="mensaje">{{ loading.mensaje }}</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+}
