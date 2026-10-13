@@ -58,7 +58,7 @@ El proyecto está construido bajo una arquitectura cliente-servidor estructurada
 | Componente | Tecnología | Descripción |
 | :--- | :--- | :--- |
 | **Frontend** | ![Angular](https://img.shields.io/badge/-Angular-DD0031?logo=angular&logoColor=white) | SPA de alto rendimiento, TypeScript, SCSS, RxJS y Angular Material. |
-| **Backend** | ![NodeJS](https://img.icons8.com/color/1200/nestjs.jpg) | NestJS operando como Middleware de seguridad. |
+| **Backend** | ![NodeJS](https://img.shields.io/badge/-NestJS-f44336?logo=nestjs&logoColor=white) | NestJS operando como Middleware de seguridad. |
 | **Base de Datos** | ![Firestore](https://img.shields.io/badge/-Firestore-FFCA28?logo=firebase&logoColor=black) | Cloud Firestore (NoSQL) para flexibilidad de esquema y consultas en tiempo real. |
 | **Autenticación** | ![Firebase Auth](https://img.shields.io/badge/-Auth-FFCA28?logo=firebase&logoColor=black) | Control seguro de identidades e integraciones de roles. |
 | **Almacenamiento** | ![Google Cloud](https://img.shields.io/badge/-Google_Cloud-4285F4?logo=google-cloud&logoColor=white) | Cloud Storage para el resguardo encriptado de expedientes físicos digitalizados. |
