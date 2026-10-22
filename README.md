@@ -1,114 +1,115 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏛️ SIGAH - Sistema Integral de Gestión de Archivos Históricos
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> Plataforma tecnológica de vanguardia diseñada para digitalizar, salvaguardar y automatizar la consulta operativa de más de 60,000 expedientes históricos del **Instituto Tecnológico de Durango (ITD)**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 📋 Descripción del Proyecto
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Este sistema implementa una arquitectura en la nube para erradicar la obsolescencia de los métodos de búsqueda manuales (tarjetas bibliográficas). Sustituye los registros físicos vulnerables al deterioro por un **"Gemelo Digital"**, garantizando tiempos de respuesta ultrarrápidos, trazabilidad forense inalterable y el cumplimiento riguroso de la Ley General de Archivos en México.
 
-## Project setup
+### 🎯 Objetivos Estratégicos
+* **Preservación Institucional:** Salvaguardar la historia académica de miles de egresados ante riesgos de deterioro mecánico o ambiental.
+* **Eficiencia Operativa:** Reducir los tiempos de localización de información de días hábiles a fracciones de segundo.
+* **Trazabilidad y Auditoría:** Cumplimiento legal a través del "Principio de Inalterabilidad Histórica", registrando cada acceso y modificación al acervo.
+* **Control Topográfico:** Vincular de forma precisa el expediente virtual con su ubicación física exacta en los anaqueles.
 
+---
+
+## 🌟 Módulos y Funcionalidades
+
+El sistema se compone de módulos funcionales críticos diseñados para optimizar el trabajo en el Departamento de Servicios Escolares:
+
+### 1. 🛡️ Core Security y Auditoría Forense
+Encargado de la protección perimetral e interna de la información confidencial.
+
+* **👥 Control de Acceso (RBAC):** Gestión jerárquica de permisos para perfiles de Administrador, Jefatura, Operador/Capturista y Auditor.
+* **🔐 Bitácora Inmutable (Audit Logs):** Registro automático y detallado (identificador, timestamp, dirección IP y snapshot de cambios) de cualquier operación (CRUD) realizada en los expedientes históricos.
+
+### 2. 🗃️ Gestión del Acervo y Digitalización
+Herramientas ergonómicas diseñadas para asimilar volúmenes masivos de datos.
+
+* **⚡ Captura de Alta Velocidad (Data Entry):** Interfaz optimizada para transcripción rápida mediante atajos de teclado, ideal para los prestadores de Servicio Social.
+* **🚀 Importación Masiva (Bulk Import):** Motor de ingesta capaz de procesar archivos **CSV** con algoritmos de sanitización para evitar matrículas o registros duplicados.
+* **📄 Visor Seguro:** Previsualización de documentos (PDFs, Actas) bloqueando descargas no autorizadas.
+
+### 3. 🔖 Circulación y Control Topográfico
+Gestión del mundo "Phygital" (físico y digital).
+
+* **🔍 Búsqueda Reactiva:** Motor de búsqueda en el cliente con latencia menor a 200 milisegundos mediante coincidencia parcial de cadenas.
+* **🖨️ Etiquetas QR y OCR:** Generación automática de etiquetas PDF con códigos QR que, al escanearse, abren el expediente digital correspondiente a la caja física.
+* **📂 Vales de Préstamo Digitales:** Emisión dinámica de documentos PDF para formalizar la cadena de custodia al extraer un expediente físico.
+
+### 4. 📈 Módulo de Inteligencia de Negocios (BI)
+Panel de control para la Jefatura del Departamento.
+
+* **📊 Dashboard Ejecutivo (KPIs):**
+  *   *Monitoreo en tiempo real del progreso de digitalización del acervo.*
+  *   *Métricas de productividad por capturista.*
+  *   *Alertas automáticas de préstamos de expedientes físicos vencidos.*
+  *   *Análisis de inventario para detectar saltos o huecos en folios históricos.*
+
+---
+
+## 🛠️ Stack Tecnológico
+
+El proyecto está construido bajo una arquitectura cliente-servidor estructurada en un monorepositorio (Stack MEAN + Firebase), orientada a eventos y funciones Serverless.
+
+| Componente | Tecnología | Descripción |
+| :--- | :--- | :--- |
+| **Frontend** | ![Angular](https://img.shields.io/badge/-Angular-DD0031?logo=angular&logoColor=white) | SPA de alto rendimiento, TypeScript, SCSS, RxJS y Angular Material. |
+| **Backend** | ![NodeJS](https://img.shields.io/badge/-NestJS-f44336?logo=nestjs&logoColor=white) | NestJS operando como Middleware de seguridad. |
+| **Base de Datos** | ![Firestore](https://img.shields.io/badge/-Firestore-FFCA28?logo=firebase&logoColor=black) | Cloud Firestore (NoSQL) para flexibilidad de esquema y consultas en tiempo real. |
+| **Autenticación** | ![Firebase Auth](https://img.shields.io/badge/-Auth-FFCA28?logo=firebase&logoColor=black) | Control seguro de identidades e integraciones de roles. |
+| **Almacenamiento** | ![Google Cloud](https://img.shields.io/badge/-Google_Cloud-4285F4?logo=google-cloud&logoColor=white) | Cloud Storage para el resguardo encriptado de expedientes físicos digitalizados. |
+
+### 🔒 Pruebas y Aseguramiento de Calidad
+* **Auditoría E2E:** Pruebas funcionales de extremo a extremo y comprobación de latencia sobre la red del ITD.
+* **Persistencia Offline:** Integración de *Service Workers* para permitir la sincronización diferida de captura en caso de fallos de red.
+* **Análisis de Vulnerabilidades:** Mitigación de riesgos *Zero-Day* usando herramientas de auditoría en el entorno MEAN.
+
+---
+
+## 💻 Instalación y Despliegue Local
+
+### Prerrequisitos
+* Nest.js 
+* Angular CLI
+* Firebase CLI
+* Credenciales de servicio de Google Cloud / Firebase.
+
+### Pasos de Instalación
+
+1.  **Clonar el repositorio:**
+    
 ```bash
-$ npm install
+    git clone [https://github.com/25CristopherJoshuaReyesGtz1405/ProjectManagementHistory_2026.git](https://github.com/25CristopherJoshuaReyesGtz1405/ProjectManagementHistory_2026.git)
 ```
 
-## Compile and run the project
+2.  **Configurar Backend:**
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+    cd Backend/functions
+    npm install
+    # Configurar archivo .env o GestionHistorica.json con las credenciales
+    npm run build
 ```
-
-## Run tests
+    
+3.   **Configurar Frontend:**
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+    cd Frontend
+    npm install
+    ng serve
 ```
+ 
+**Acceso:** Navegar a http://localhost:4200/.
 
-## Deployment
+---
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## 📄 Licencia e Información del Proyecto
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+**Versión:** 2.1
+**Estado:** En proceso de verificación (Pruebas E2E).
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observer](https://observer.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+*Cristopher Joshua Reyes Gutiérrez - Desarrollador Full-Stack & Project Manager (Autor Intelectual y Líder Técnico Full-Stack).*
