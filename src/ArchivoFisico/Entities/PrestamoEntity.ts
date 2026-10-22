@@ -60,10 +60,10 @@ export class PrestamoEntity {
 
   // ================= ZERO-TRUST MFA =================
   @Column({ type: 'varchar', length: 255, name: 'otp_hashed', nullable: true })
-  otpHashed: string;
+  otpHashed: string | null;
 
   @Column({ type: 'timestamptz', name: 'otp_expiracion', nullable: true })
-  otpExpiracion: Date;
+  otpExpiracion: Date | null;
 
   // ================= AUDITORÍA =================
   @CreateDateColumn({ type: 'timestamptz', name: 'fecha_creacion' })

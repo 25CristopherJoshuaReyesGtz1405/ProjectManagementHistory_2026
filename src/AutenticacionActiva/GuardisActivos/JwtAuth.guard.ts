@@ -5,6 +5,11 @@ import { DataSource } from 'typeorm';
 import { LruCacheService } from './../../NucleoActivo/CacheActivo/LruCache.service.js';
 import { IS_PUBLIC_KEY } from './../DecoradoresActivos/PublicDecorador.js';
 
+interface CachedIdentity {
+  idUsuario: string;
+  rol: string;
+}
+
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
@@ -14,7 +19,6 @@ export class JwtAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -36,14 +40,13 @@ export class JwtAuthGuard implements CanActivate {
       const decodedToken = await getAuth().verifyIdToken(token);
       const uid = decodedToken.uid;
 
-      // 2. Aceleración por RAM: Buscamos el rol del usuario en la Caché
-      let rolUsuario = this.cacheService.get<string>(`user_role_${uid}`);
+      // 2. Aceleración por RAM: Buscamos identidad interna y rol en la Caché
+      let identidad = this.cacheService.get<CachedIdentity>(`user_identity_${uid}`);
 
       // 3. Si no está en RAM (Cold Start), consultamos PostgreSQL (Autorización)
-      if (!rolUsuario) {
-        // Consulta directa y optimizada a la tabla de identidad
+      if (!identidad) {
         const result = await this.dataSource.query(
-          `SELECT cr.nombre AS rol 
+          `SELECT u.id_usuario AS "idUsuario", cr.nombre AS rol 
            FROM identidad.usuario u
            INNER JOIN configuracion.catalogo_rol_usuario cr ON u.id_rol = cr.id_rol
            WHERE u.uid_firebase = $1 AND u.fecha_baja IS NULL`,
@@ -54,21 +57,26 @@ export class JwtAuthGuard implements CanActivate {
           throw new ForbiddenException('Su cuenta no tiene privilegios operativos en la base de datos institucional.');
         }
 
-        rolUsuario = result[0].rol;
+        identidad = {
+          idUsuario: result[0].idUsuario,
+          rol: result[0].rol,
+        };
         
         // Guardamos en RAM para las siguientes peticiones
-        this.cacheService.set(`user_role_${uid}`, rolUsuario);
+        this.cacheService.set(`user_identity_${uid}`, identidad);
       }
 
-      // 4. Inyectamos los datos en la petición para que los Controladores puedan usarlos
+      // 4. Inyectamos el UUID real de PostgreSQL junto con el UID de Firebase
       request.user = {
+        idUsuario: identidad.idUsuario, // <-- UUID real de PostgreSQL listo para Auditoría Forense
         uid: uid,
         email: decodedToken.email,
-        rol: rolUsuario
+        rol: identidad.rol,
       };
 
       return true;
     } catch (error: any) {
+      if (error instanceof ForbiddenException) throw error;
       throw new UnauthorizedException(`Credenciales rechazadas: ${error.message}`);
     }
   }

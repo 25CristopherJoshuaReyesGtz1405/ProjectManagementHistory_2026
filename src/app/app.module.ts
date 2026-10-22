@@ -8,6 +8,8 @@ import { IdentidadModule } from '../IdentidadActiva/IdentidadModule.js';
 import { ConfiguracionModule } from '../ConfiguracionActiva/ConfiguracionModule.js';
 import { AcademicoModule } from '../Academico/AcademicoModule.js';
 import { ArchivoFisicoModule } from '../ArchivoFisico/ArchivoFisicoModule.js';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -45,6 +47,24 @@ import { ArchivoFisicoModule } from '../ArchivoFisico/ArchivoFisicoModule.js';
         logging: true, 
       }),
     }),
+
+    // 3. Configurar el Rate Limiting (10 peticiones cada 60,000 milisegundos)
+    ThrottlerModule.forRoot([{
+      ttl: 60000, 
+      limit: 10,
+    }]),
+
+    // 4. Configurar la conexión Global a Redis mediante Variables de Entorno
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('REDIS_HOST', 'localhost'),
+          port: configService.get<number>('REDIS_PORT', 6379),
+        },
+      }),
+    }),
   ],
   controllers: [],
   providers: 
@@ -52,6 +72,10 @@ import { ArchivoFisicoModule } from '../ArchivoFisico/ArchivoFisicoModule.js';
     {
       provide: APP_GUARD, 
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard, // <-- 3. Añadir el Guard del Rate Limiter a nivel global
     }
   ],
 })

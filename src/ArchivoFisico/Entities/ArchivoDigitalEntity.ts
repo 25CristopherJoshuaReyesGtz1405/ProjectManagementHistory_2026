@@ -25,7 +25,7 @@ export class ArchivoDigitalEntity {
   @Column({ type: 'varchar', length: 255, name: 'nombre_original' })
   nombreOriginal: string;
 
-  @Column({ type: 'varchar', length: 500, name: 'ruta_local', unique: true })
+  @Column({ type: 'varchar', length: 500, name: 'ruta_local' })
   rutaLocal: string;
 
   @Column({ type: 'bigint', name: 'peso_bytes' })
@@ -39,4 +39,7 @@ export class ArchivoDigitalEntity {
 
   @DeleteDateColumn({ type: 'timestamptz', name: 'fecha_baja', nullable: true })
   fechaBaja: Date;
+
+  @Column({ type: 'text', name: 'contenido_texto', nullable: true })
+  contenidoTexto: string;
 }

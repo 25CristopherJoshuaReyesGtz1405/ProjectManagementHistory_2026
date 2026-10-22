@@ -9,6 +9,7 @@ import { PersonaEntity } from '../../IdentidadActiva/Entities/PersonaEntity.js';
 import { ArchivoDigitalEntity } from '../../ArchivoFisico/Entities/ArchivoDigitalEntity.js';
 import { PrestamoEntity } from '../../ArchivoFisico/Entities/PrestamoEntity.js';
 import { UbicacionTopograficaEntity } from '../../ArchivoFisico/Entities/UbicacionTopograficaEntity.js';
+import { ExpedienteAuditoriaEntity } from './ExpedienteAuditoriaEntity.js';
 
 @Entity({ schema: 'academico', name: 'expediente' })
 export class ExpedienteEntity {
@@ -87,4 +88,8 @@ export class ExpedienteEntity {
   // Un expediente puede tener un historial de MUCHOS préstamos a lo largo del tiempo
   @OneToMany(() => PrestamoEntity, (prestamo) => prestamo.expediente)
   prestamos: Relation<PrestamoEntity[]>;
+
+  // En ExpedienteEntity.ts (Al final de tus relaciones)
+  @OneToMany(() => ExpedienteAuditoriaEntity, (auditoria) => auditoria.expediente)
+  historialAuditoria: Relation<ExpedienteAuditoriaEntity[]>;
 }

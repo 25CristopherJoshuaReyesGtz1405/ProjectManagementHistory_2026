@@ -28,9 +28,9 @@ import { ConfiguracionSeederService } from './ConfiguracionSeeder.js';
       CatalogoRolUsuarioEntity,
       CatalogoTipoArchivoEntity,
       RolPermisoEntity, 
-      ConfiguracionSeederService
     ])
   ],
   exports: [TypeOrmModule], 
+  providers: [ConfiguracionSeederService], 
 })
 export class ConfiguracionModule {}

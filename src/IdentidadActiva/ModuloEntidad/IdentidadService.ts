@@ -1,9 +1,9 @@
 import { Injectable, ConflictException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ActualizarPersonaDTO } from './DTOs/ActualizarPersonaDTO.js';
-import { CrearPersonaDTO } from './DTOs/CrearPersonaDTO.js';
-import { PersonaEntity } from './Entities/PersonaEntity.js';
+import { ActualizarPersonaDTO } from '../DTOs/ActualizarPersonaDTO.js';
+import { CrearPersonaDTO } from '../DTOs/CrearPersonaDTO.js';
+import { PersonaEntity } from '../Entities/PersonaEntity.js';
 
 
 @Injectable()

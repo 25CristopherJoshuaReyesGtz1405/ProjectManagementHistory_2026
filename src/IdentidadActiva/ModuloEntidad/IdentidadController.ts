@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Patch, Delete, Param, Body } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'; // <-- 1. IMPORTACIONES NUEVAS
-import { ActualizarPersonaDTO } from './DTOs/ActualizarPersonaDTO.js';
-import { CrearPersonaDTO } from './DTOs/CrearPersonaDTO.js';
+import { ActualizarPersonaDTO } from '../DTOs/ActualizarPersonaDTO.js';
+import { CrearPersonaDTO } from '../DTOs/CrearPersonaDTO.js';
 import { IdentidadService } from './IdentidadService.js';
 
 @ApiTags('Identidad Biométrica') 

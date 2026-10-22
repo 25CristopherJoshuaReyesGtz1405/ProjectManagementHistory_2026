@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PersonaEntity } from './Entities/PersonaEntity.js';
-import { IdentidadController } from './IdentidadController.js';
-import { IdentidadService } from './IdentidadService.js';
+import { IdentidadController } from './ModuloEntidad/IdentidadController.js';
+import { IdentidadService } from './ModuloEntidad/IdentidadService.js';
 import { UsuarioEntity } from './Entities/UsuarioEntity.js';
 
 
