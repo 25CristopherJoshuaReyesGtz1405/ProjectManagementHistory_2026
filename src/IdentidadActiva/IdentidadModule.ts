@@ -4,10 +4,16 @@ import { PersonaEntity } from './Entities/PersonaEntity.js';
 import { IdentidadController } from './ModuloEntidad/IdentidadController.js';
 import { IdentidadService } from './ModuloEntidad/IdentidadService.js';
 import { UsuarioEntity } from './Entities/UsuarioEntity.js';
+import { AlertaSeguridadEntity } from './Entities/AlertaSeguridadEntity.js';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PersonaEntity, UsuarioEntity])],
+  imports: [TypeOrmModule.forFeature
+  ([
+    PersonaEntity, 
+    UsuarioEntity, 
+    AlertaSeguridadEntity
+  ])],
   controllers: [IdentidadController],
   providers: [IdentidadService],
   exports: [TypeOrmModule, IdentidadService], // Lo exportamos por si expedientes necesita buscar personas

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ActualizarPersonaDTO } from '../DTOs/ActualizarPersonaDTO.js';
 import { CrearPersonaDTO } from '../DTOs/CrearPersonaDTO.js';
 import { PersonaEntity } from '../Entities/PersonaEntity.js';
+import { UsuarioEntity } from '../Entities/UsuarioEntity.js';
 
 
 @Injectable()
@@ -11,6 +12,9 @@ export class IdentidadService {
   constructor(
     @InjectRepository(PersonaEntity)
     private readonly personaRepository: Repository<PersonaEntity>,
+
+    @InjectRepository(UsuarioEntity) 
+    private readonly usuarioRepository: Repository<UsuarioEntity>
   ) {}
 
   async crearPersona(datos: CrearPersonaDTO): Promise<PersonaEntity> {
@@ -24,6 +28,17 @@ export class IdentidadService {
       }
       throw new InternalServerErrorException('Fallo al persistir la identidad en la base de datos.');
     }
+  }
+
+  async obtenerUsuarioPorUid(uidFirebase: string) {
+    const usuario = await this.usuarioRepository.findOne({
+      where: { uidFirebase },
+      relations: { rol: true },
+    });
+    if (!usuario) {
+      throw new NotFoundException('Usuario administrativo no localizado en el padrón.');
+    }
+    return usuario;
   }
 
   async obtenerTodas(): Promise<PersonaEntity[]> {

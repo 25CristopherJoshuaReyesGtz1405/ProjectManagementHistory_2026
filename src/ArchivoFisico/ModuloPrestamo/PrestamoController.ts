@@ -92,6 +92,21 @@ export class PrestamoController {
     };
   }
 
+  @Get('mis-activos')
+@ApiOperation({ summary: 'Obtener los préstamos activos (Solicitados o En Custodia) del usuario actual' })
+async obtenerMisPrestamos(@Req() req: any) {
+  const idUsuario = req.user?.idUsuario;
+  if (!idUsuario) {
+    throw new UnauthorizedException('No se detectó la identidad del operador en la sesión.');
+  }
+  const prestamos = await this.prestamoService.obtenerMisPrestamosActivos(idUsuario);
+  return {
+    status: 'success',
+    total: prestamos.length,
+    data: prestamos,
+  };
+}
+
   @Post('regenerar-otp')
   @ApiOperation({ summary: 'Solicitante: Regenerar código de seguridad OTP para un préstamo activo' })
   async regenerarOtp(@Body() dto: RegenerarOtpDTO, @Req() req: any) {

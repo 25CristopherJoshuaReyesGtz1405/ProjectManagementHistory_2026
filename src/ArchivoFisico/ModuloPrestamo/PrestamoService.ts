@@ -258,10 +258,10 @@ export class PrestamoService {
 
       // 3. AUDITORÍA FORENSE Y TRANSICIÓN DE ESTADO
       // Pasamos el estatus a 5 = DEVUELTO
-      prestamo.estatusPrestamo = { idEstatusPrestamo: 5 } as any;
+      prestamo.estatusPrestamo = { idEstatusPrestamo: 5, nombre: 'DEVUELTO' };
       
       // Registramos en qué estado físico regresó la carpeta (Bueno, Deteriorado, etc.)
-      prestamo.estadoConservacionRetorno = { idEstadoConservacion: dto.idEstadoConservacionRetorno } as any;
+      prestamo.estadoConservacionRetorno = { idEstado: dto.idEstadoConservacionRetorno, nombre: 'DEVUELTO' };
       
       // Si el archivista anotó que viene dañado, guardamos el porqué
       if (dto.observacionesRetorno) {
@@ -299,7 +299,22 @@ export class PrestamoService {
     }
   }
 
-  // En tu Service...
+  async obtenerMisPrestamosActivos(idUsuarioSolicitante: string) {
+  return await this.dataSource
+    .getRepository(PrestamoEntity)
+    .createQueryBuilder('prestamo')
+    .innerJoinAndSelect('prestamo.expediente', 'expediente')
+    .leftJoinAndSelect('expediente.persona', 'persona')
+    .leftJoinAndSelect('expediente.carrera', 'carrera')
+    .innerJoinAndSelect('prestamo.estatusPrestamo', 'estatus')
+    .leftJoinAndSelect('prestamo.motivo', 'motivo')
+    .where('prestamo.usuarioSolicitante.idUsuario = :idUsuario', { idUsuario: idUsuarioSolicitante })
+    .andWhere('estatus.idEstatusPrestamo IN (:...estados)', { estados: [1, 4] }) // 1 = SOLICITADO, 4 = EN CUSTODIA
+    .andWhere('prestamo.fechaBaja IS NULL')
+    .orderBy('prestamo.fechaCreacion', 'DESC')
+    .getMany();
+}
+
   async obtenerDocumentosPorControl(numeroControl: string) {
     // Retornamos el expediente y hacemos un INNER JOIN a sus archivos digitales
     return await this.dataSource.getRepository(ExpedienteEntity).createQueryBuilder('exp')

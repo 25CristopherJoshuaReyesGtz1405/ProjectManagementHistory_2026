@@ -27,8 +27,7 @@ import { ArchivoDigitalEntity } from '../../ArchivoFisico/Entities/ArchivoDigita
 import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib';
 import * as fsPromises from 'fs/promises';
 
-import pdfParse = require('pdf-parse');
-
+import pdfParse from 'pdf-parse';
 import * as fs from 'fs';
 
 import * as crypto from 'crypto';

@@ -48,10 +48,10 @@ import { BullModule } from '@nestjs/bullmq';
       }),
     }),
 
-    // 3. Configurar el Rate Limiting (10 peticiones cada 60,000 milisegundos)
+    // 3. Configurar el Rate Limiting (20 peticiones cada 60,000 milisegundos)
     ThrottlerModule.forRoot([{
       ttl: 60000, 
-      limit: 10,
+      limit: 20,
     }]),
 
     // 4. Configurar la conexión Global a Redis mediante Variables de Entorno

@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # 1. BASE DE DATOS TRANSACCIONAL (PostgreSQL)
+  sigah-db:
+    image: postgres:15-alpine
+    container_name: sigah_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Itd2026_Secure!}
+      POSTGRES_DB: ${DB_NAME:-sigah_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. MOTOR EN MEMORIA Y COLAS DE TRABAJO (Redis)
+  sigah-redis:
+    image: redis:7-alpine
+    container_name: sigah_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    command: ["redis-server", "--appendonly", "yes"] # Persistencia ligera para las colas
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. NÚCLEO DE NEGOCIO (NestJS Backend)
+  sigah-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sigah_backend
+    restart: on-failure
+    depends_on:
+      sigah-db:
+        condition: service_healthy
+      sigah-redis:
+        condition: service_healthy
+    environment:
+      - PORT=3000
+      - DB_HOST=sigah-db
+      - DB_PORT=5432
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-Itd2026_Secure!}
+      - DB_NAME=${DB_NAME:-sigah_db}
+      - REDIS_HOST=sigah-redis
+      - REDIS_PORT=6379
+      - SIGAH_CRYPTO_SECRET=${SIGAH_CRYPTO_SECRET:-ReemplazarEnProd}
+    ports:
+      - "3000:3000"
+
+volumes:
+  pgdata:
+  redisdata:

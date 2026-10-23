@@ -1,0 +1,36 @@
+# =========================================================
+# ETAPA 1: BUILDER (Compilación del código TypeScript)
+# =========================================================
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+# Aprovechamos el caché de Docker instalando primero las dependencias
+COPY package*.json ./
+RUN npm ci
+
+# Copiamos el resto del código y compilamos
+COPY . .
+RUN npm run build
+
+# =========================================================
+# ETAPA 2: PRODUCCIÓN (Imagen ligera y segura)
+# =========================================================
+FROM node:20-alpine
+WORKDIR /app
+
+# SEGURIDAD: Ejecutamos el contenedor con el usuario 'node' (No-Root)
+# Si el contenedor es vulnerado, el atacante no tendrá permisos de administrador
+RUN chown -R node:node /app
+USER node
+
+# Instalamos SOLO dependencias de producción (reduce el tamaño y superficie de ataque)
+COPY --chown=node:node package*.json ./
+RUN npm ci --omit=dev
+
+# Copiamos la compilación desde la etapa Builder
+COPY --from=builder --chown=node:node /app/dist ./dist
+
+EXPOSE 3000
+
+# Arrancamos el motor transaccional
+CMD ["node", "dist/main.js"]
