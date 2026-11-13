@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Patch, Query, Req, UnauthorizedException, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Patch, Query, Req, UnauthorizedException, Delete, UseGuards, NotFoundException } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { CrearExpedienteDTO } from '../DTOs/CrearExpedienteDTO.js';
 import { ExpedienteService } from './ExpedienteService.js';
@@ -7,6 +7,9 @@ import { BuscarExpedienteDTO } from '../DTOs/BuscarExpedienteDTO.js';
 
 import { StreamableFile, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { DataSource } from 'typeorm';
+import { PrestamoEntity } from '../../ArchivoFisico/Entities/PrestamoEntity.js';
+import { JwtAuthGuard } from '../../AutenticacionActiva/GuardisActivos/JwtAuth.guard.js';
 
 @ApiTags('Acervo Académico')
 @ApiBearerAuth()
@@ -293,6 +296,24 @@ export class ExpedienteController {
     return { 
       status: 'success', 
       mensaje: 'El documento ha sido desvinculado exitosamente. El evento ha quedado registrado en la bitácora inmutable.' 
+    };
+  }
+
+  // =======================================================
+  // 13. HISTORIAL FORENSE DEL EXPEDIENTE
+  // =======================================================
+  /**
+   * GET /api/v3/academico/expedientes/:numControl/auditoria
+   * Retorna la línea de tiempo forense para el Drawer de Angular
+   */
+  @Get(':numControl/auditoria')
+  async obtenerAuditoriaForense(@Param('numControl') numControl: string) {
+    const data = await this.expedienteService.obtenerHistorialForense(numControl);
+    
+    return {
+      status: 'success',
+      message: 'Bitácora forense recuperada correctamente',
+      data: data
     };
   }
 }

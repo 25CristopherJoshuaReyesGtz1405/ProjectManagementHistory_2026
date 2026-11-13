@@ -30,6 +30,22 @@ export class IdentidadService {
     }
   }
 
+  // =======================================================
+  // OBTENER PERFIL DE USUARIO POR UID (FIREBASE)
+  // =======================================================
+  async obtenerPerfilPorUid(uidFirebase: string) {
+    const usuario = await this.usuarioRepository.createQueryBuilder('u')
+      .leftJoinAndSelect('u.rol', 'rol') // Traemos la relación del catálogo de roles
+      .where('u.uidFirebase = :uid', { uid: uidFirebase })
+      .andWhere('u.fechaBaja IS NULL')
+      .getOne();
+
+    if (!usuario) {
+      throw new NotFoundException('Usuario no localizado en el padrón institucional.');
+    }
+    return usuario;
+  }
+
   async obtenerUsuarioPorUid(uidFirebase: string) {
     const usuario = await this.usuarioRepository.findOne({
       where: { uidFirebase },

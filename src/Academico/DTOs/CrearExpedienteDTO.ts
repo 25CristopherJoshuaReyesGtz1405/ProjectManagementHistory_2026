@@ -34,4 +34,8 @@ export class CrearExpedienteDTO {
   @IsString()
   @Length(2, 20)
   modalidad?: string;
+
+  @IsString({ message: 'Las observaciones deben ser un bloque de texto válido.' })
+  @IsOptional()
+  observaciones?: string;
 }

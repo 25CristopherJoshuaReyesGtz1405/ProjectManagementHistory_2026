@@ -1,66 +1,86 @@
-version: '3.8'
-
 services:
-  # 1. BASE DE DATOS TRANSACCIONAL (PostgreSQL)
-  sigah-db:
+  sigah-postgres:
     image: postgres:15-alpine
-    container_name: sigah_postgres
-    restart: always
+    container_name: sigah_postgres_db
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-Itd2026_Secure!}
-      POSTGRES_DB: ${DB_NAME:-sigah_db}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres_root_itd}
+      POSTGRES_DB: ${DB_NAME:-sigah_itd}
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata_sigah:/var/lib/postgresql/data
+      - ./docker/postgres/init-schemas.sql:/docker-entrypoint-initdb.d/init-schemas.sql:ro
+    networks:
+      - sigah_internal_net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-sigah_itd}"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # 2. MOTOR EN MEMORIA Y COLAS DE TRABAJO (Redis)
   sigah-redis:
     image: redis:7-alpine
-    container_name: sigah_redis
-    restart: always
+    container_name: sigah_redis_queue
+    restart: unless-stopped
+    command: redis-server --appendonly yes
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
-      - redisdata:/data
-    command: ["redis-server", "--appendonly", "yes"] # Persistencia ligera para las colas
+      - redisdata_sigah:/data
+    networks:
+      - sigah_internal_net
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # 3. NÚCLEO DE NEGOCIO (NestJS Backend)
-  sigah-api:
+  sigah-backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: sigah_backend
-    restart: on-failure
+    container_name: sigah_api_v3
+    restart: unless-stopped
     depends_on:
-      sigah-db:
+      sigah-postgres:
         condition: service_healthy
       sigah-redis:
         condition: service_healthy
-    environment:
-      - PORT=3000
-      - DB_HOST=sigah-db
-      - DB_PORT=5432
-      - DB_USER=${DB_USER:-postgres}
-      - DB_PASSWORD=${DB_PASSWORD:-Itd2026_Secure!}
-      - DB_NAME=${DB_NAME:-sigah_db}
-      - REDIS_HOST=sigah-redis
-      - REDIS_PORT=6379
-      - SIGAH_CRYPTO_SECRET=${SIGAH_CRYPTO_SECRET:-ReemplazarEnProd}
     ports:
       - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      DB_HOST: sigah-postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres_root_itd}
+      DB_NAME: ${DB_NAME:-sigah_itd}
+      REDIS_HOST: sigah-redis
+      REDIS_PORT: 6379
+      STORAGE_TEMP_PATH: /usr/src/app/temp_uploads
+      STORAGE_HOT_PATH: /usr/src/app/boveda_local_itd
+      STORAGE_COLD_PATH: /usr/src/app/boveda_fria_itd
+      FIREBASE_CREDENTIALS_PATH: /usr/src/app/secrets/FirebaseServiceAccount.json
+      GOOGLE_DRIVE_CREDENTIALS_PATH: /usr/src/app/secrets/FirebaseServiceAccount.json
+      GOOGLE_DRIVE_ROOT_FOLDER_ID: ${GOOGLE_DRIVE_ROOT_FOLDER_ID:-}
+      SIGAH_CRYPTO_SECRET: ${SIGAH_CRYPTO_SECRET:-ITD_MASTER_CRYPTO_SALT_2026}
+      VERIFICAMEX_API_KEY: ${VERIFICAMEX_API_KEY:-}
+    volumes:
+      - ./boveda_local_itd:/usr/src/app/boveda_local_itd
+      - ./boveda_fria_itd:/usr/src/app/boveda_fria_itd
+      - ./temp_uploads:/usr/src/app/temp_uploads
+      - ./src/AutenticacionActiva/ConfiguracionActiva/FirebaseServiceAccount.json:/usr/src/app/secrets/FirebaseServiceAccount.json:ro
+    networks:
+      - sigah_internal_net
 
 volumes:
-  pgdata:
-  redisdata:
+  pgdata_sigah:
+  redisdata_sigah:
+
+networks:
+  sigah_internal_net:
+    driver: bridge

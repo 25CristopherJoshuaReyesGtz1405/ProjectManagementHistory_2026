@@ -27,7 +27,7 @@ import { ArchivoDigitalEntity } from '../../ArchivoFisico/Entities/ArchivoDigita
 import { PDFDocument, rgb, degrees, StandardFonts } from 'pdf-lib';
 import * as fsPromises from 'fs/promises';
 
-import pdfParse from 'pdf-parse';
+import pdfParse = require('pdf-parse');
 import * as fs from 'fs';
 
 import * as crypto from 'crypto';
@@ -36,6 +36,13 @@ import * as path from 'path';
 import { ZipArchive } from 'archiver';
 import { CatalogoEstatusExpedienteEntity } from '../../ConfiguracionActiva/Entities/CatalogoEstatusExpedienteEntity.js';
 import { CatalogoNivelAcademicoEntity } from '../../ConfiguracionActiva/Entities/CatalogoNivelAcademicoEntity.js';
+import { PrestamoEntity } from '../../ArchivoFisico/Entities/PrestamoEntity.js';
+import { AlertaSeguridadEntity } from '../../IdentidadActiva/Entities/AlertaSeguridadEntity.js';
+import {
+  RespuestaHistorialForenseDTO,
+  EventoForense,
+} from '../DTOs/RespuestaHistorialForenseDTO.js';
+import { TramiteTitulacionEntity } from '../Entities/TramiteTitulacionEntity.js';
 
 @Injectable()
 export class ExpedienteService {
@@ -205,16 +212,26 @@ export class ExpedienteService {
     await queryRunner.startTransaction();
 
     try {
-      // 1. Bloqueo pesimista (FOR UPDATE) para evitar condiciones de carrera entre administradores
+      // 1. FASE DE BLOQUEO
+      const expedienteLock = await queryRunner.manager
+        .createQueryBuilder(ExpedienteEntity, 'exp')
+        .select('exp.idExpediente')
+        .where('exp.numControl = :numeroControl', { numeroControl })
+        .andWhere('exp.fechaBaja IS NULL')
+        .setLock('pessimistic_write')
+        .getOne();
+
+      if (!expedienteLock) {
+        throw new NotFoundException(`No se localizó un expediente activo con el Número de Control [${numeroControl}].`);
+      }
+
+      // 2. FASE DE EXTRACCIÓN
       const expedienteRaiz = await queryRunner.manager
         .createQueryBuilder(ExpedienteEntity, 'exp')
         .leftJoinAndSelect('exp.estatus', 'estatus')
         .leftJoinAndSelect('exp.nivelAcademico', 'nivel')
-        .where('exp.numControl = :numeroControl', { numeroControl })
-        .andWhere('exp.fechaBaja IS NULL')
-        .setLock('pessimistic_write', undefined, ['exp'])
+        .where('exp.idExpediente = :id', { id: expedienteLock.idExpediente })
         .getOne();
-
       if (!expedienteRaiz) {
         throw new NotFoundException(
           `No se localizó un expediente activo con el Número de Control [${numeroControl}].`,
@@ -941,6 +958,49 @@ export class ExpedienteService {
 
     // Retornamos el Buffer y el tamaño para el Controller
     return Buffer.from(pdfSelladoBytes);
+  }
+
+  // =======================================================
+  // MOTOR DE EXTRACCIÓN FORENSE (LÍNEA DE TIEMPO UNIFICADA)
+  // =======================================================
+  /**
+   * Obtiene la bitácora criptográfica/forense de un expediente específico.
+   * Mapea exactamente a la interfaz HistorialForenseExpediente del Frontend.
+   */
+  async obtenerHistorialForense(numControl: string) {
+    // 1. Verificamos que el expediente exista
+    const expediente = await this.expedienteRepo.findOne({
+      where: { numControl },
+      select: { idExpediente: true, numControl: true },
+    });
+
+    if (!expediente) {
+      throw new NotFoundException(
+        `No existe un expediente con matrícula ${numControl}`,
+      );
+    }
+
+    // 2. Consultamos la bitácora ordenada (más reciente primero)
+    const eventos = await this.auditoriaRepo.find({
+      where: { expediente: { idExpediente: expediente.idExpediente } },
+      relations: { usuarioAccion: true },
+      order: { fechaAccion: 'DESC' }, // Orden Cronológico Inverso
+    });
+
+    // 3. Mapeamos al DTO estructurado que espera Angular
+    return {
+      numeroControl: expediente.numControl,
+      totalEventosRegistrados: eventos.length,
+      lineaDeTiempo: eventos.map((evento) => ({
+        idEvento: evento.idAuditoria,
+        fecha: evento.fechaAccion,
+        accion: evento.tipoAccion, // Ej: "CREADO", "MODIFICADO", "PRÉSTAMO_FÍSICO", "PDF_SUBIDO"
+        responsable:
+          evento.usuarioAccion?.nombreCompleto || 'Sistema Automático',
+        ip: evento.ipOrigen || '127.0.0.1',
+        detalles: evento.detallesCambio, // JSONB con el "antes" y "después"
+      })),
+    };
   }
 
   // =======================================================

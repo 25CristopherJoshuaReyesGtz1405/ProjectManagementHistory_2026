@@ -7,11 +7,13 @@ import {
   Param,
   Body,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'; // <-- 1. IMPORTACIONES NUEVAS
 import { ActualizarPersonaDTO } from '../DTOs/ActualizarPersonaDTO.js';
 import { CrearPersonaDTO } from '../DTOs/CrearPersonaDTO.js';
 import { IdentidadService } from './IdentidadService.js';
+import { JwtAuthGuard } from '../../AutenticacionActiva/GuardisActivos/JwtAuth.guard.js';
 
 @ApiTags('Identidad Biométrica')
 @ApiBearerAuth()
@@ -37,6 +39,12 @@ export class IdentidadController {
       req.user?.uid,
     );
     return { status: 'success', data: resultado };
+  }
+
+  @UseGuards(JwtAuthGuard) // Protegemos la ruta para que exija el token de Firebase
+  @Get('usuarios/:uid')
+  async obtenerPerfilUsuario(@Param('uid') uid: string) {
+    return await this.identidadService.obtenerPerfilPorUid(uid);
   }
 
   @Get('personas/:curp')

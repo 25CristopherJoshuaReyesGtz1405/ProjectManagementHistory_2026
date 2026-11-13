@@ -32,4 +32,34 @@ export class LruCacheService {
   delete(key: string): void {
     this.cache.delete(key);
   }
+
+  /**
+   * Purga toda la caché de identidades en RAM (Uso exclusivo del Administrador)
+   */
+  clearAll(): number {
+    const totalEliminados = this.cache.size;
+    this.cache.clear();
+    return totalEliminados;
+  }
+
+  /**
+   * Devuelve métricas del estado actual de la caché LRU en RAM
+   */
+  obtenerEstadisticasRam() {
+    const ahora = Date.now();
+    let vigentes = 0;
+    let expirados = 0;
+
+    for (const [, entry] of this.cache.entries()) {
+      if (ahora <= entry.expiresAt) vigentes++;
+      else expirados++;
+    }
+
+    return {
+      totalLlavesEnRam: this.cache.size,
+      sesionesVigentesCache: vigentes,
+      sesionesExpiradasPendientes: expirados,
+      ttlMinutos: this.TTL_MS / 60000,
+    };
+  }
 }

@@ -11,16 +11,26 @@ export class FirebaseConfig implements OnModuleInit {
     // Patrón Singleton con la nueva sintaxis modular para entornos ESM
     if (getApps().length === 0) {
       try {
-        const serviceAccountPath = path.resolve(process.cwd(), './src/AutenticacionActiva/ConfiguracionActiva/FirebaseServiceAccount.json');
-        const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
+        const rutaRelativa =
+          process.env.FIREBASE_CREDENTIALS_PATH ||
+          './src/AutenticacionActiva/ConfiguracionActiva/FirebaseServiceAccount.json';
+        const serviceAccountPath = path.resolve(process.cwd(), rutaRelativa);
+        const serviceAccount = JSON.parse(
+          fs.readFileSync(serviceAccountPath, 'utf8'),
+        );
 
         initializeApp({
           credential: cert(serviceAccount),
         });
-        
-        this.logger.log('🔥 Firebase Admin SDK inicializado (Resource Server Híbrido Activo).');
+
+        this.logger.log(
+          '🔥 Firebase Admin SDK inicializado (Resource Server Híbrido Activo).',
+        );
       } catch (error) {
-        this.logger.error('Fallo crítico al inicializar Firebase Admin. Verifique el archivo JSON de credenciales.', error);
+        this.logger.error(
+          'Fallo crítico al inicializar Firebase Admin. Verifique el archivo JSON de credenciales.',
+          error,
+        );
         throw error;
       }
     }

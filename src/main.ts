@@ -6,11 +6,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const origenesPermitidos = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',').map((o) => o.trim())
+    : ['http://localhost:4200'];
+
   app.enableCors({
-    origin: ['http://localhost:4200'],
+    origin: origenesPermitidos.includes('*') ? true : origenesPermitidos,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
+
+  const port = Number(process.env.PORT) || 3000;
+  await app.listen(port, '0.0.0.0');
 
   // 1. Escudo de Validación Global (Purga Inmunológica)
   app.useGlobalPipes(

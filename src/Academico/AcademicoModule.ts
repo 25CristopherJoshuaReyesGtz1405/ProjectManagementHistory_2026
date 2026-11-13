@@ -14,6 +14,7 @@ import { TitulacionWorker } from './ModuloTitulacion/TitulacionWorker.js';
 import { InteroperabilidadService } from './ModuloInteroperabilidad/InteroperabilidadService.js';
 import { BullModule } from '@nestjs/bullmq';
 import { InteroperabilidadController } from './ModuloInteroperabilidad/InteroperabilidadController.js';
+import { TitulacionController } from './ModuloTitulacion/TitulacionController.js';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { InteroperabilidadController } from './ModuloInteroperabilidad/Interoper
   controllers: 
   [
     ExpedienteController, 
-    InteroperabilidadController
+    InteroperabilidadController, 
+    TitulacionController
   ],
   providers: 
   [

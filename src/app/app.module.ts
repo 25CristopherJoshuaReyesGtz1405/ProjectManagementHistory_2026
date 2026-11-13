@@ -10,6 +10,8 @@ import { AcademicoModule } from '../Academico/AcademicoModule.js';
 import { ArchivoFisicoModule } from '../ArchivoFisico/ArchivoFisicoModule.js';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { BullModule } from '@nestjs/bullmq';
+import { SoporteModule } from '../ModuloSoporte/SoporteModule.js';
+import { AdminGobernanzaModule } from '../IdentidadActiva/ModuloAdminGobernanza/AdminGobernanzaModule.js';
 
 @Module({
   imports: [
@@ -22,9 +24,10 @@ import { BullModule } from '@nestjs/bullmq';
     IdentidadModule,
     AcademicoModule,
     ArchivoFisicoModule,
-    ConfiguracionModule, 
+    ConfiguracionModule,
+    SoporteModule,
+    AdminGobernanzaModule,
 
-    
     // 2. Configurar TypeORM de forma asíncrona usando las variables del .env
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -36,23 +39,25 @@ import { BullModule } from '@nestjs/bullmq';
         username: configService.get<string>('DB_USER'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        
+
         // Carga automática de las Entidades que vayamos creando
         autoLoadEntities: true,
-        
 
-        synchronize: true, 
-        
+        synchronize: true,
+
         // Para ver las consultas SQL en la terminal durante el desarrollo
-        logging: true, 
+        logging: true,
+
       }),
     }),
 
     // 3. Configurar el Rate Limiting (20 peticiones cada 60,000 milisegundos)
-    ThrottlerModule.forRoot([{
-      ttl: 60000, 
-      limit: 20,
-    }]),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 20,
+      },
+    ]),
 
     // 4. Configurar la conexión Global a Redis mediante Variables de Entorno
     BullModule.forRootAsync({
@@ -67,16 +72,15 @@ import { BullModule } from '@nestjs/bullmq';
     }),
   ],
   controllers: [],
-  providers: 
-  [
+  providers: [
     {
-      provide: APP_GUARD, 
+      provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard, // <-- 3. Añadir el Guard del Rate Limiter a nivel global
-    }
+    },
   ],
 })
 export class AppModule {}

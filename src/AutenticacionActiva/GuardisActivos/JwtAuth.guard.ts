@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  UnauthorizedException,
+  ForbiddenException
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { getAuth } from 'firebase-admin/auth';
 import { DataSource } from 'typeorm';
@@ -14,20 +20,52 @@ interface CachedIdentity {
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly dataSource: DataSource,
-    private readonly cacheService: LruCacheService, 
+    private readonly cacheService: LruCacheService,
     private readonly reflector: Reflector
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    // 1. Verificar primero si el endpoint o evento es público
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
-    
+
     if (isPublic) return true;
 
+    // =========================================================================
+    // 2. SOPORTE PARA WEBSOCKETS (Socket.IO)
+    // =========================================================================
+    if (context.getType() === 'ws') {
+      const client = context.switchToWs().getClient();
+      const authHeader =
+        client?.handshake?.headers?.authorization ||
+        client?.handshake?.auth?.token;
+
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split('Bearer ')[1];
+        try {
+          const decodedToken = await getAuth().verifyIdToken(token);
+          const identidad = this.cacheService.get<CachedIdentity>(`user_identity_${decodedToken.uid}`);
+          client.user = {
+            idUsuario: identidad?.idUsuario,
+            uid: decodedToken.uid,
+            email: decodedToken.email,
+            rol: identidad?.rol,
+          };
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // =========================================================================
+    // 3. FLUJO HTTP REST CON CACHÉ LRU EN RAM
+    // =========================================================================
     const request = context.switchToHttp().getRequest();
-    const authHeader = request.headers.authorization;
+    const authHeader = request?.headers?.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       throw new UnauthorizedException('Acceso denegado. Bearer Token no proporcionado.');
@@ -61,14 +99,14 @@ export class JwtAuthGuard implements CanActivate {
           idUsuario: result[0].idUsuario,
           rol: result[0].rol,
         };
-        
+
         // Guardamos en RAM para las siguientes peticiones
         this.cacheService.set(`user_identity_${uid}`, identidad);
       }
 
       // 4. Inyectamos el UUID real de PostgreSQL junto con el UID de Firebase
       request.user = {
-        idUsuario: identidad.idUsuario, // <-- UUID real de PostgreSQL listo para Auditoría Forense
+        idUsuario: identidad.idUsuario,
         uid: uid,
         email: decodedToken.email,
         rol: identidad.rol,

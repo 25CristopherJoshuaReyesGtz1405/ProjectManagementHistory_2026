@@ -6,49 +6,50 @@ import { InteroperabilidadService } from '../ModuloInteroperabilidad/Interoperab
 
 describe('Ingeniería de Rendimiento: Prueba de Concurrencia Extrema (Stress Test)', () => {
   let interoperabilidadService: InteroperabilidadService;
-  
+
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         InteroperabilidadService,
-        // Al inyectar el motor real (o un mock avanzado), probamos el cuello de botella
-        { provide: ConfigService, useValue: { get: vi.fn() } },
-        { 
-          provide: DataSource, 
+        { provide: ConfigService, useValue: { get: vi.fn().mockReturnValue('LLAVE_NO_CONFIGURADA') } },
+        {
+          provide: DataSource,
           useValue: {
             createQueryBuilder: vi.fn().mockReturnValue({
               update: vi.fn().mockReturnThis(),
               set: vi.fn().mockReturnThis(),
+              leftJoinAndSelect: vi.fn().mockReturnThis(),
               where: vi.fn().mockReturnThis(),
               andWhere: vi.fn().mockReturnThis(),
               returning: vi.fn().mockReturnThis(),
-              // Simulamos la respuesta de la BD
-              execute: vi.fn().mockResolvedValue({ raw: [{ id_convenio: '1', limite_diario_peticiones: 10, nombre_empresa: 'SEP' }] })
+              execute: vi.fn().mockResolvedValue({
+                raw: [{ id_convenio: '1', limite_diario_peticiones: 100, nombre_empresa: 'DGP-SEP' }],
+              }),
+              getOne: vi.fn().mockResolvedValue({
+                numControl: '22040000',
+                estatus: { nombre: 'Titulado' },
+                nivelAcademico: { nombre: 'Licenciatura' },
+                carrera: { nombre: 'Ingeniería en Sistemas Computacionales' },
+                titulacion: { tieneTitulo: true },
+              }),
             }),
-            getRepository: vi.fn().mockReturnValue({ create: vi.fn(), save: vi.fn(), update: vi.fn() })
-          }
-        }
+            getRepository: vi.fn().mockReturnValue({ create: vi.fn(), save: vi.fn(), update: vi.fn() }),
+          },
+        },
       ],
     }).compile();
 
     interoperabilidadService = module.get<InteroperabilidadService>(InteroperabilidadService);
   });
 
-  it('debe procesar 50 peticiones concurrentes sin colapsar el Hilo de Eventos (Event Loop)', async () => {
-    // Simulamos un ataque o un pico de tráfico legítimo donde 50 sistemas de la SEP 
-    // consultan a nuestro backend exactamente al mismo tiempo.
-    const peticionesMasivas = Array.from({ length: 50 }).map(() => 
-      interoperabilidadService.verificarEstatusEgresado('LLAVE_PLANA', '22040000', '192.168.1.100')
+  it('debe procesar 50 peticiones concurrentes sin colapsar el Event Loop y resolver las 50 firmas', async () => {
+    const peticionesMasivas = Array.from({ length: 50 }).map(() =>
+      interoperabilidadService.verificarEstatusEgresado('LLAVE_PLANA', '22040000', '192.168.1.100'),
     );
 
-    // Promise.allSettled dispara todas a la vez sin esperar a la anterior
     const resultados = await Promise.allSettled(peticionesMasivas);
-    
-    // Verificamos que ninguna promesa se quedó colgada (Timeout) ni tumbó el servidor
-    const fallidas = resultados.filter(r => r.status === 'rejected');
-    
-    // NOTA: Como mockeamos la función, todas deberían "pasar", pero en un E2E real conectado 
-    // a Postgres, veríamos exactamente 10 resueltas y 40 rechazadas (por el HTTP 429).
-    expect(fallidas.length).toBeDefined();
+    const exitosas = resultados.filter((r) => r.status === 'fulfilled');
+
+    expect(exitosas.length).toBe(50);
   });
 });

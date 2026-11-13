@@ -5,6 +5,9 @@ import { IdentidadController } from './ModuloEntidad/IdentidadController.js';
 import { IdentidadService } from './ModuloEntidad/IdentidadService.js';
 import { UsuarioEntity } from './Entities/UsuarioEntity.js';
 import { AlertaSeguridadEntity } from './Entities/AlertaSeguridadEntity.js';
+import { NotificacionEntity } from './Entities/NotificacionEntity.js';
+import { NotificacionController } from './ModuloNotificacion/NotificacionController.js';
+import { NotificacionService } from './ModuloNotificacion/NotificacionService.js';
 
 
 @Module({
@@ -12,10 +15,12 @@ import { AlertaSeguridadEntity } from './Entities/AlertaSeguridadEntity.js';
   ([
     PersonaEntity, 
     UsuarioEntity, 
-    AlertaSeguridadEntity
+    AlertaSeguridadEntity, 
+    NotificacionEntity,
+    
   ])],
-  controllers: [IdentidadController],
-  providers: [IdentidadService],
-  exports: [TypeOrmModule, IdentidadService], // Lo exportamos por si expedientes necesita buscar personas
+  controllers: [IdentidadController, NotificacionController, ],
+  providers: [IdentidadService, NotificacionService, ],
+  exports: [TypeOrmModule, IdentidadService, ], // Lo exportamos por si expedientes necesita buscar personas
 })
 export class IdentidadModule {}

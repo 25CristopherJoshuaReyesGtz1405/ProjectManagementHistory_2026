@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn, type Relation } from 'typeorm';
 import { TramiteTitulacionEntity } from './TramiteTitulacionEntity.js';
 import { UsuarioEntity } from '../../IdentidadActiva/Entities/UsuarioEntity.js';
+import { CatalogoSinodalEntity } from './CatalogoSinodalEntity.js';
 
 @Entity({ schema: 'academico', name: 'firma_sinodal' })
 export class FirmaSinodalEntity {
@@ -11,9 +12,9 @@ export class FirmaSinodalEntity {
   @JoinColumn({ name: 'id_tramite' })
   tramite: Relation<TramiteTitulacionEntity>;
 
-  @ManyToOne(() => UsuarioEntity)
+  @ManyToOne(() => CatalogoSinodalEntity)
   @JoinColumn({ name: 'id_usuario_sinodal' })
-  sinodal: Relation<UsuarioEntity>;
+  sinodal: Relation<CatalogoSinodalEntity>;
 
   @Column({ type: 'varchar', length: 20, name: 'rol_sinodal' })
   rolSinodal: string; // PRESIDENTE, SECRETARIO, VOCAL

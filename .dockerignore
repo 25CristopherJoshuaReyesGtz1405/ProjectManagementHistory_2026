@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+.git
+.gitignore
+.env
+boveda_local_itd
+boveda_fria_itd
+temp_uploads
+*log
+npm-debug.log*x

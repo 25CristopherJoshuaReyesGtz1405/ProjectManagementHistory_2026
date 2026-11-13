@@ -89,7 +89,9 @@ export class ExpedienteEntity {
   @OneToMany(() => PrestamoEntity, (prestamo) => prestamo.expediente)
   prestamos: Relation<PrestamoEntity[]>;
 
-  // En ExpedienteEntity.ts (Al final de tus relaciones)
   @OneToMany(() => ExpedienteAuditoriaEntity, (auditoria) => auditoria.expediente)
   historialAuditoria: Relation<ExpedienteAuditoriaEntity[]>;
+
+  @Column({ type: 'text', name: 'observaciones', nullable: true })
+  observaciones: string;
 }

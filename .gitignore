@@ -115,3 +115,32 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+
+# Dependencias y compilación
+node_modules/
+dist/
+build/
+coverage/
+
+# Credenciales y Secretos Zero-Trust (NUNCA SUBIR A GITHUB)
+.env
+.env.*
+!.env.example
+**/FirebaseServiceAccount.json
+**/google-credentials.json
+secrets/
+*.pem
+*.key
+
+# Bóvedas de Archivos Locales del Servidor
+boveda_local_itd/
+boveda_fria_itd/
+temp_uploads/
+
+# Sistema Operativo e IDEs
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

@@ -9,6 +9,7 @@ import { CatalogoEstatusPrestamoEntity } from './Entities/CatalogoEstatusPrestam
 import { CatalogoMotivoPrestamoEntity } from './Entities/CatalogoMotivoPrestamoEntity.js';
 import { CatalogoEstadoConservacionEntity } from './Entities/CatalogoEstadoConservacionEntity.js';
 import { CatalogoTipoArchivoEntity } from './Entities/CatalogoTipoArchivoEntity.js';
+import { CatalogoSinodalEntity } from '../Academico/Entities/CatalogoSinodalEntity.js';
 
 @Injectable()
 export class ConfiguracionSeederService implements OnApplicationBootstrap {
@@ -31,6 +32,8 @@ export class ConfiguracionSeederService implements OnApplicationBootstrap {
     private conservacionRepo: Repository<CatalogoEstadoConservacionEntity>,
     @InjectRepository(CatalogoTipoArchivoEntity)
     private tipoArchivoRepo: Repository<CatalogoTipoArchivoEntity>,
+    @InjectRepository(CatalogoSinodalEntity)
+    private readonly sinodalRepo: Repository<CatalogoSinodalEntity>
   ) {}
 
   async onApplicationBootstrap() {
@@ -43,7 +46,25 @@ export class ConfiguracionSeederService implements OnApplicationBootstrap {
     await this.sembrarMotivosPrestamo();
     await this.sembrarEstadosConservacion();
     await this.sembrarTiposArchivo();
+    await this.sembrarSinodales();
     this.logger.log('Protocolo de siembra finalizado con éxito.');
+  }
+
+  private async sembrarSinodales() {
+    const conteo = await this.sinodalRepo.count();
+    if (conteo === 0) {
+      console.log('Sembrando Catálogo Oficial de Sinodales ITD...');
+      await this.sinodalRepo.save([
+        this.sinodalRepo.create({ gradoAcademico: 'Dr.', nombreCompleto: 'Marco Antonio Gurrola', departamento: 'Sistemas y Computación' }),
+        this.sinodalRepo.create({ gradoAcademico: 'M.C.', nombreCompleto: 'Claudia Elena Vázquez', departamento: 'Sistemas y Computación' }),
+        this.sinodalRepo.create({ gradoAcademico: 'Ing.', nombreCompleto: 'Roberto Carlos Salinas', departamento: 'Ingeniería Industrial' }),
+        this.sinodalRepo.create({ gradoAcademico: 'M.I.', nombreCompleto: 'Fernando Hernández', departamento: 'Sistemas y Computación' }),
+        // Añadimos a la Dra. Niltza Iracema y Dra. Mayela Lechuga para tus validaciones de residencia/consultoría
+        this.sinodalRepo.create({ gradoAcademico: 'Dra.', nombreCompleto: 'Niltza Iracema González García', departamento: 'División de Estudios Profesionales' }),
+        this.sinodalRepo.create({ gradoAcademico: 'Dra.', nombreCompleto: 'Mayela Lechuga Nevárez', departamento: 'Ciencias Económico-Administrativas' })
+      ]);
+      console.log('Catálogo de Sinodales sembrado exitosamente.');
+    }
   }
 
   private async sembrarRolesUsuario() {

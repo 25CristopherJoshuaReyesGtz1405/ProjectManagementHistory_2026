@@ -22,5 +22,9 @@ export class ActualizarExpedienteDTO {
   @IsInt()
   idNivelAcademico?: number;
 
+  @IsString({ message: 'Las observaciones deben ser un bloque de texto válido.' })
+  @IsOptional()
+  observaciones?: string;
+
   // Campos específicos de titulación si se maneja directo en el expediente
 }

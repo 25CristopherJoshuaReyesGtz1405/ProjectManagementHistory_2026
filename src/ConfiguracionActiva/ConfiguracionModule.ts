@@ -14,6 +14,8 @@ import { CatalogoTipoArchivoEntity } from './Entities/CatalogoTipoArchivoEntity.
 import { RolPermisoEntity } from './Entities/RolPermisoEntity.js';
 import { ConfiguracionSeederService } from './ConfiguracionSeeder.js';
 
+import { CatalogoSinodalEntity } from '../Academico/Entities/CatalogoSinodalEntity.js'; // <-- 1. Agrega esta importación
+
 @Global()
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { ConfiguracionSeederService } from './ConfiguracionSeeder.js';
       CatalogoRolUsuarioEntity,
       CatalogoTipoArchivoEntity,
       RolPermisoEntity, 
+      CatalogoSinodalEntity, // <-- 2. Agrega esta entidad
     ])
   ],
   exports: [TypeOrmModule], 

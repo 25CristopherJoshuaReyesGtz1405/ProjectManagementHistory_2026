@@ -181,5 +181,4 @@ export class DigitalizacionController {
       data: acervoDocumental
     };
   }
-
 }

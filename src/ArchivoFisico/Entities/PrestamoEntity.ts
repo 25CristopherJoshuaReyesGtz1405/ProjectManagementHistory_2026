@@ -17,6 +17,7 @@ export class PrestamoEntity {
   @Column({ type: 'varchar', length: 100, name: 'folio', unique: true })
   folio: string;
 
+
   // ================= RELACIONES =================
   @ManyToOne(() => ExpedienteEntity)
   @JoinColumn({ name: 'id_expediente' })
