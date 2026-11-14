@@ -1,36 +1,46 @@
-# =========================================================
-# ETAPA 1: BUILDER (Compilación del código TypeScript)
-# =========================================================
-FROM node:20-alpine AS builder
-WORKDIR /app
+# =========================================================================
+# ETAPA 1: BUILDER (Compilación TypeScript ESM con Heap extendido a 4GB)
+# =========================================================================
+FROM node:22-alpine AS builder
 
-# Aprovechamos el caché de Docker instalando primero las dependencias
+WORKDIR /usr/src/app
+
+# Ampliamos el límite de memoria V8 a 4 GB para evitar OOM al compilar googleapis
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
+RUN apk add --no-cache python3 make g++
+
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
-# Copiamos el resto del código y compilamos
-COPY . .
-RUN npm run build
+COPY tsconfig*.json nest-cli.json ./
+COPY src ./src
 
-# =========================================================
-# ETAPA 2: PRODUCCIÓN (Imagen ligera y segura)
-# =========================================================
-FROM node:20-alpine
-WORKDIR /app
+# Compilamos omitiendo el chequeo pesado de .d.ts externos en node_modules
+RUN npx tsc -p tsconfig.build.json --skipLibCheck --incremental false
 
-# SEGURIDAD: Ejecutamos el contenedor con el usuario 'node' (No-Root)
-# Si el contenedor es vulnerado, el atacante no tendrá permisos de administrador
-RUN chown -R node:node /app
+# =========================================================================
+# ETAPA 2: RUNNER (Imagen de producción ligera y endurecida)
+# =========================================================================
+FROM node:22-alpine AS runner
+
+WORKDIR /usr/src/app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
+RUN mkdir -p boveda_local_itd boveda_fria_itd temp_uploads secrets && \
+    chown -R node:node /usr/src/app
+
+COPY --from=builder --chown=node:node /usr/src/app/package*.json ./
+COPY --from=builder --chown=node:node /usr/src/app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /usr/src/app/dist ./dist
+
 USER node
-
-# Instalamos SOLO dependencias de producción (reduce el tamaño y superficie de ataque)
-COPY --chown=node:node package*.json ./
-RUN npm ci --omit=dev
-
-# Copiamos la compilación desde la etapa Builder
-COPY --from=builder --chown=node:node /app/dist ./dist
 
 EXPOSE 3000
 
-# Arrancamos el motor transaccional
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/api/v3/soporte/salud-nodos || exit 1
+
 CMD ["node", "dist/main.js"]

@@ -14,6 +14,8 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { SoporteService } from './SoporteService.js';
 import { UsuarioEntity } from '../IdentidadActiva/Entities/UsuarioEntity.js';
 
+import { Public } from '../AutenticacionActiva/DecoradoresActivos/PublicDecorador.js';
+
 @ApiTags('Soporte Técnico y Telemetría en Tiempo Real')
 @ApiBearerAuth()
 @Controller('api/v3/soporte')
@@ -120,6 +122,7 @@ export class SoporteController {
     };
   }
 
+  @Public()
   @Get('salud-nodos')
   @ApiOperation({ summary: 'Autodiagnóstico en tiempo real de PostgreSQL, BullMQ y Bóveda' })
   async verificarSalud() {

@@ -16,9 +16,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const port = Number(process.env.PORT) || 3000;
-  await app.listen(port, '0.0.0.0');
-
   // 1. Escudo de Validación Global (Purga Inmunológica)
   app.useGlobalPipes(
     new ValidationPipe({
@@ -35,14 +32,16 @@ async function bootstrap() {
       'Motor Transaccional del Sistema Integral de Gestión de Archivos Históricos',
     )
     .setVersion('3.0')
-    .addBearerAuth() // <-- Habilita el botón para inyectar el Token JWT en la UI
+    .addBearerAuth()
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document);
 
-  await app.listen(3000);
-  console.log(`🚀 Servidor SIGAH operando en: http://localhost:3000`);
-  console.log(`📚 Documentación Swagger en: http://localhost:3000/api/docs`);
+  const port = Number(process.env.PORT) || 3000;
+  await app.listen(port, '0.0.0.0');
+
+  console.log(`🚀 Servidor SIGAH operando en: http://localhost:${port}`);
+  console.log(`📚 Documentación Swagger en: http://localhost:${port}/api/docs`);
 }
 bootstrap();
